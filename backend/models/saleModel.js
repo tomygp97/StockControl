@@ -7,6 +7,21 @@ const saleSchema = new Schema({
         ref: 'Product',
         required: true,
     },
+    customer: {
+        name: {
+            type: String,
+            required: true,
+            trim: true,
+        },
+        contact: {
+            type: String,
+            trim: true,
+        },
+        phone: {
+            type: Number,
+            trimm: true,
+        }
+    },
     quantitySold: {
         type: Number,
         required: true,
@@ -16,6 +31,17 @@ const saleSchema = new Schema({
         type: Number,
         required: true,
         min: 0,
+    },
+    paymentDetails: {
+        method: {
+            type: String,
+            required: true,
+            enum: ['Efectivo', 'Transferencia', 'Mercadopago'],
+        },
+    },
+    bill: {
+        type: Boolean,
+        default: false,
     },
     date: {
         type: Date,

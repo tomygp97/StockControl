@@ -12,6 +12,11 @@ const costSchema = new Schema({
         required: true,
         trim: true,
     },
+    unitCost: {
+        type: Number,
+        required: true,
+        min: 0,
+    },
     amount: {
         type: Number,
         required: true,
