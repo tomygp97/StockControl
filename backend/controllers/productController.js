@@ -26,21 +26,47 @@ const getProductById = async (req, res) => {
 
 const createProduct = async (req, res) => {
     try {
-        const newProduct = new Product(req.body);
+        const variants = req.body.variants.map(variant => ({
+            color: variant.color,
+            size: variant.size,
+            quantity: variant.quantity
+        }));
+
+        const quantityInStock = variants.reduce((sum, variant) => sum + variant.quantity, 0);
+
+        const newProduct = new Product({
+            name: req.body.name,
+            price: req.body.price,
+            category: req.body.category,
+            description: req.body.description,
+            quantityInStock: quantityInStock,
+            variants: variants,
+        });
         await newProduct.save();
         res.status(StatusCodes.CREATED).json({ newProduct });
     } catch (error) {
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
         console.log(error);
-    } 
+    }
 };
 
-const updateProduct = async (req, res) => {
+const updateProduct = async(req, res) => {
     try {
-        const updatedProduct = await Product.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        const updatedProduct = await Product.findById(req.params.id);
         if(!updatedProduct) {
             return res.status(StatusCodes.NOT_FOUND).json({ error: 'Producto no encontrado' });
         };
+
+        req.body.variants.forEach((variant) => {
+            const existingVariant = updatedProduct.variants.find(v => v.color === variant.color && v.size === variant.size);
+            if(existingVariant) {
+                existingVariant.quantity = variant.quantity;
+            }
+        });
+
+        updatedProduct.quantityInStock = updatedProduct.variants.reduce((sum, variant) => sum + variant.quantity, 0); // calculamos nuevamente stock total
+
+        await updatedProduct.save();
         res.status(StatusCodes.OK).json({ updatedProduct });
     } catch (error) {
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });

@@ -3,6 +3,7 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 require('dotenv').config();
 const app = express();
+const morgan = require('morgan');
 
 // routes
 const productRouter = require('./routes/porductRouter');
@@ -12,8 +13,16 @@ const productRouter = require('./routes/porductRouter');
 
 const port = process.env.PORT || 5000;
 
-app.use(cors());
+app.use(cors(
+    //TODO origin: 'http://localhost:3000', // Remplazar con la URL de frontend
+    //TODO methods: ['GET', 'POST', 'PUT', '[PATCH]', 'DELETE'],
+    //TODO credentials: true,
+));
 app.use(express.json());
+
+if(process.env.NODE_ENV === 'development') {
+    app.use(morgan('dev'));
+};
 
 app.get('/', (req, res) => {
     res.send('Hola mundo desde StockControl!');
