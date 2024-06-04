@@ -35,10 +35,7 @@ const createProduct = async (req, res) => {
         const quantityInStock = variants.reduce((sum, variant) => sum + variant.quantity, 0);
 
         const newProduct = new Product({
-            name: req.body.name,
-            price: req.body.price,
-            category: req.body.category,
-            description: req.body.description,
+            ...req.body,
             quantityInStock: quantityInStock,
             variants: variants,
         });

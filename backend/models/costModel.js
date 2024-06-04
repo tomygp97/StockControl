@@ -17,6 +17,11 @@ const costSchema = new Schema({
         required: true,
         min: 0,
     },
+    unitsOrdered: {
+        type: Number,
+        required: true,
+        min: 0,
+    },
     amount: {
         type: Number,
         required: true,

@@ -7,7 +7,7 @@ const morgan = require('morgan');
 
 // routes
 const productRouter = require('./routes/porductRouter');
-//TODO const costRouter = require('./routes/costRouter');
+const costRouter = require('./routes/costRouter');
 //TODO const saleRouter = require('./routes/saleRouter');
 
 
@@ -29,7 +29,7 @@ app.get('/', (req, res) => {
 });
 
 app.use('/products', productRouter);
-//TODO app.use('/costs', costRouter);
+app.use('/costs', costRouter);
 //TODO app.use('/sales', saleRouter);
 
 app.use('*', (req, res) => {
