@@ -13,7 +13,7 @@ const getAllProducts = async (req, res) => {
 
 const getProductById = async (req, res) => {
     try {
-        const product = await Product.findById(req.params.id);
+        const product = await Product.findById(req.params.id).populate('variants');
         if (!product) {
             return res.status(StatusCodes.NOT_FOUND).json({ error: 'Producto no encontrado' });
         };
@@ -26,13 +26,17 @@ const getProductById = async (req, res) => {
 
 const createProduct = async (req, res) => {
     try {
-        const variants = req.body.variants.map(variant => ({
-            color: variant.color,
-            size: variant.size,
-            quantity: variant.quantity
-        }));
+        let quantityInStock = 0;
+        let variants = [];
 
-        const quantityInStock = variants.reduce((sum, variant) => sum + variant.quantity, 0);
+        if(req.body.variants) {
+            variants = req.body.variants.map(variant => ({
+                color: variant.color,
+                size: variant.size,
+                quantity: variant.quantity
+            }));
+            quantityInStock = variants.reduce((sum, variant) => sum + variant.quantity, 0);
+        }
 
         const newProduct = new Product({
             ...req.body,
@@ -41,12 +45,13 @@ const createProduct = async (req, res) => {
         });
         await newProduct.save();
         res.status(StatusCodes.CREATED).json({ newProduct });
-    } catch (error) {
+    } catch (error) { 
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
         console.log(error);
     }
 };
 
+// modificar para actualizar variantes en updateVariants
 const updateProduct = async(req, res) => {
     try {
         const updatedProduct = await Product.findById(req.params.id);
