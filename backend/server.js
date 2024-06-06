@@ -8,7 +8,7 @@ const morgan = require('morgan');
 // routes
 const productRouter = require('./routes/porductRouter');
 const costRouter = require('./routes/costRouter');
-//TODO const saleRouter = require('./routes/saleRouter');
+const saleRouter = require('./routes/saleRouter');
 
 
 const port = process.env.PORT || 5000;
@@ -30,7 +30,7 @@ app.get('/', (req, res) => {
 
 app.use('/products', productRouter);
 app.use('/costs', costRouter);
-//TODO app.use('/sales', saleRouter);
+app.use('/sales', saleRouter);
 
 app.use('*', (req, res) => {
     res.status(404).json({ error: 'Ruta no encontrada' });

@@ -14,4 +14,4 @@ const {
 router.route('/').get(getAllCosts).post(createCost);
 router.route('/:id').get(getCostById).put(updateCost).delete(deleteCost);
 
-module.exports = router
+module.exports = router;

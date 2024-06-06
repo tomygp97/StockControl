@@ -25,4 +25,4 @@ router.route('/:id').get(getProductById).put(updateProduct).delete(deleteProduct
 router.route('/:id/variants').get(getAllVariants).post(createVariant);
 router.route('/:id/variants/:variantId').get(getVariantById).put(updateVariant).delete(deleteVariant);
 
-module.exports = router
+module.exports = router;

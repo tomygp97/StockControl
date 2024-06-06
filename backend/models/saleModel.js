@@ -7,6 +7,11 @@ const saleSchema = new Schema({
         ref: 'Product',
         required: true,
     },
+    variant: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Variant',
+        required: true,
+    },
     customer: {
         name: {
             type: String,
