@@ -1,6 +1,6 @@
-// const { mongoose } = require('mongoose');
+const { mongoose } = require('mongoose');
 const { body, param, validationResult  } = require('express-validator');
-const { default: mongoose } = require('mongoose');
+const { StatusCodes } = require('http-status-codes');
 
 // Models
 const Product = require('../models/productModel');
