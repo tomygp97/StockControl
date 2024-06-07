@@ -9,7 +9,8 @@ const {
     deleteCost,
 } = require('../controllers/costController');
 
-//TODO: add validation middleware
+//! Verificar validaciones
+const { validateCost } = require('../middleware/validationMiddleware');
 
 router.route('/').get(getAllCosts).post(createCost);
 router.route('/:id').get(getCostById).put(updateCost).delete(deleteCost);

@@ -17,7 +17,8 @@ const {
     deleteVariant
 } = require('../controllers/variantController');
 
-//TODO: add validation middleware
+//! Verificar validaciones
+const { validateProduct, validateVariant } = require('../middleware/validationMiddleware');
 
 router.route('/').get(getAllProducts).post(createProduct);
 router.route('/:id').get(getProductById).put(updateProduct).delete(deleteProduct);

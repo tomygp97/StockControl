@@ -9,7 +9,8 @@ const {
     deleteSale,
 } = require('../controllers/saleController');
 
-//TODO: add validation middleware
+//! Verificar validaciones
+const { validateSale } = require('../middleware/validationMiddleware');
 
 router.route('/').get(getAllSales).post(createSale);
 router.route('/:id').get(getSaleById).put(updateSale).delete(deleteSale);
