@@ -1,7 +1,7 @@
 const Sale = require('../models/saleModel');
 const Product = require('../models/productModel');
 const { StatusCodes } = require('http-status-codes');
-const updateStock = require('../helpers/updateStock');
+const updateStockOnSale = require('../helpers/updateStockOnSale');
 
 const getAllSales = async (req, res) => {
     try {
@@ -52,7 +52,7 @@ const createSale = async (req, res) => {
         });
 
         // Actualizamos el stock
-        await updateStock(productId, variantId, quantitySold);
+        await updateStockOnSale(productId, variantId, quantitySold);
 
         // Guardamos la venta
         await newSale.save();

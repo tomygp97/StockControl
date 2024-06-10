@@ -1,42 +1,38 @@
 const Variant = require('../models/variantModel');
 const Product = require('../models/productModel');
 const { StatusCodes } = require('http-status-codes');
+const increaseStockOnNewVariant = require('../helpers/increaseStockOnNewVariant');
 
-//! Verificar si es necesaria
 const getAllVariants = async(req, res) => {
         try {
-            const variants = await Variant.find({});
-            res.status(StatusCodes.OK).json({ variants });
+            const productId = req.params.id;
+            const product = await Product.findById(productId).populate('variants');
+            res.status(StatusCodes.OK).json({ variants: product.variants });
         } catch (error) {
             res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
         }
 };
+
 const getVariantById = async(req, res) => {
     try {
-        const variantId = req.params.variantId;
-        const variant = await Variant.findById(variantId);
-        if(!variant) {
-            return res.status(StatusCodes.NOT_FOUND).json({ error: 'Variante no encontrada' });
-        };
+        const variant = req.variant;
         res.status(StatusCodes.OK).json({ variant });
     } catch (error) {
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
     }
 };
+
 const createVariant = async(req, res) => {
     try {
         const newVariant = new Variant({ ...req.body });
         await newVariant.save();
 
         const product = await Product.findById(req.params.id);
-        if(!product) {
-            return res.status(StatusCodes.NOT_FOUND).json({ error: 'Producto no encontrado' });
-        };
         // Agrego Id de variante a la lista de variantes
         product.variants.push(newVariant._id);
-        // Actualizo el stock
-        product.quantityInStock += newVariant.quantity;
         await product.save();
+        // Actualizo el stock
+        await increaseStockOnNewVariant(product._id, newVariant.quantity);
 
         res.status(StatusCodes.CREATED).json({ newVariant });
     } catch (error) {

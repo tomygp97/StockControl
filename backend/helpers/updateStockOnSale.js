@@ -1,7 +1,7 @@
 const Product = require('../models/productModel');
 const Variant = require('../models/variantModel');
 
-const updateStock = async (productId, variantId, quantitySold) => {
+const updateStockOnSale = async (productId, variantId, quantitySold) => {
     
     const variant = await Variant.findById(variantId);
     if (!variant) {
@@ -27,4 +27,4 @@ const updateStock = async (productId, variantId, quantitySold) => {
     await product.save();
 };
 
-module.exports = updateStock;
+module.exports = updateStockOnSale;
