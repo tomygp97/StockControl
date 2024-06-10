@@ -14,9 +14,6 @@ const getAllProducts = async (req, res) => {
 const getProductById = async (req, res) => {
     try {
         const product = await Product.findById(req.params.id).populate('variants');
-        if (!product) {
-            return res.status(StatusCodes.NOT_FOUND).json({ error: 'Producto no encontrado' });
-        };
         res.status(StatusCodes.OK).json({ product });
     } catch (error) {
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
@@ -27,21 +24,9 @@ const getProductById = async (req, res) => {
 const createProduct = async (req, res) => {
     try {
         let quantityInStock = 0;
-        let variants = [];
-
-        if(req.body.variants) {
-            variants = req.body.variants.map(variant => ({
-                color: variant.color,
-                size: variant.size,
-                quantity: variant.quantity
-            }));
-            quantityInStock = variants.reduce((sum, variant) => sum + variant.quantity, 0);
-        }
-
         const newProduct = new Product({
             ...req.body,
             quantityInStock: quantityInStock,
-            variants: variants,
         });
         await newProduct.save();
         res.status(StatusCodes.CREATED).json({ newProduct });
@@ -51,25 +36,10 @@ const createProduct = async (req, res) => {
     }
 };
 
-// modificar para actualizar variantes en updateVariants
 const updateProduct = async(req, res) => {
     try {
-        const updatedProduct = await Product.findById(req.params.id);
-        if(!updatedProduct) {
-            return res.status(StatusCodes.NOT_FOUND).json({ error: 'Producto no encontrado' });
-        };
-
-        req.body.variants.forEach((variant) => {
-            const existingVariant = updatedProduct.variants.find(v => v.color === variant.color && v.size === variant.size);
-            if(existingVariant) {
-                existingVariant.quantity = variant.quantity;
-            }
-        });
-
-        updatedProduct.quantityInStock = updatedProduct.variants.reduce((sum, variant) => sum + variant.quantity, 0); // calculamos nuevamente stock total
-
-        await updatedProduct.save();
-        res.status(StatusCodes.OK).json({ updatedProduct });
+        const updatedProduct = await Product.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        res.status(StatusCodes.OK).json({ msg: "Producto Modificado Correctamente", product: updatedProduct });
     } catch (error) {
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
         console.log(error);
@@ -79,9 +49,6 @@ const updateProduct = async(req, res) => {
 const deleteProduct = async (req,res) => {
     try {
         const deletedProduct = await Product.findByIdAndDelete(req.params.id);
-        if(!deletedProduct) {
-            return res.status(StatusCodes.NOT_FOUND).json({ error: 'Producto no encontrado' });
-        };
         res.status(StatusCodes.OK).json({ deletedProduct });
     } catch (error) {
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });

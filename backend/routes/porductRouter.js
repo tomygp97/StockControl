@@ -17,13 +17,12 @@ const {
     deleteVariant
 } = require('../controllers/variantController');
 
-//! Verificar validaciones
-const { validateProduct, validateVariant } = require('../middleware/validationMiddleware');
+const { validateProduct, validateProductUpdate, validateVariant, validateProductIdParam } = require('../middleware/validationMiddleware');
 
-router.route('/').get(getAllProducts).post(createProduct);
-router.route('/:id').get(getProductById).put(updateProduct).delete(deleteProduct);
+router.route('/').get(getAllProducts).post(validateProduct, createProduct);
+router.route('/:id').get(validateProductIdParam, getProductById).put(validateProductIdParam, validateProductUpdate, updateProduct).delete(validateProductIdParam, deleteProduct);
 
-router.route('/:id/variants').get(getAllVariants).post(createVariant);
-router.route('/:id/variants/:variantId').get(getVariantById).put(updateVariant).delete(deleteVariant);
+router.route('/:id/variants').get(getAllVariants).post(validateVariant, createVariant);
+router.route('/:id/variants/:variantId').get(getVariantById).put(validateVariant, updateVariant).delete(deleteVariant);
 
 module.exports = router;

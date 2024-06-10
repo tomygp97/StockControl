@@ -23,19 +23,28 @@ const withValidationErrors = (validateValues) => {
 const validateProduct = withValidationErrors([
     body('name').notEmpty().withMessage('El nombre es requerido'),
     body('price').notEmpty().withMessage('El precio es requerido'),
-    body('quantityInStock').notEmpty().withMessage('La cantidad en stock es requerida'),
     body('category').notEmpty().withMessage('La categoría es requerida'),
     body('description')
-        .if(body('description').exists()).length({ min: 5, max: 300 }).withMessage('La descripción debe tener entre 5 y 300 caracteres'),
+    .optional().if(body('description').exists()).isLength({ min: 5, max: 300 }).withMessage('La descripción debe tener entre 5 y 300 caracteres'),
 ]);
+
+const validateProductUpdate = withValidationErrors([
+    body('name').optional().notEmpty().withMessage('El nombre es requerido'),
+    body('price').optional().notEmpty().withMessage('El precio es requerido'),
+    body('category').optional().notEmpty().withMessage('La categoría es requerida'),
+    body('description').optional()
+        .if(body('description').exists()).isLength({ min: 5, max: 300 }).withMessage('La descripción debe tener entre 5 y 300 caracteres'),
+]);
+
 
 //* Variant Validations
 const validateVariant = withValidationErrors([
-    body('variants.*.color').notEmpty().withMessage('El color es requerido').isIn(['Azul', 'Beige', 'Negro', 'Rojo', 'Verde']).withMessage('El color debe ser Azul, Beige, Negro, Rojo o Verde'),
-    body('variants.*.size').notEmpty().withMessage('El tamaño es requerido').isIn(['34', '36', '38', '40', '42', '44', '46', '48', '50', '52', '54']).withMessage('El talle debe ser un valor entre 34 y 54'),
-    body('variants.*.quantity').notEmpty().withMessage('La cantidad es requerida')
+    body('color').notEmpty().withMessage('El color es requerido').isIn(['Azul', 'Beige', 'Negro', 'Rojo', 'Verde']).withMessage('El color debe ser Azul, Beige, Negro, Rojo o Verde'),
+    body('size').notEmpty().withMessage('El tamaño es requerido').isIn(['34', '36', '38', '40', '42', '44', '46', '48', '50', '52', '54']).withMessage('El talle debe ser un valor entre 34 y 54'),
+    body('quantity').notEmpty().withMessage('La cantidad es requerida')
         .isInt({ min: 0 }).withMessage('La cantidad debe ser un número positivo'),
 ]);
+
 
 //* Cost Validations
 const validateCost = withValidationErrors([
@@ -48,7 +57,7 @@ const validateCost = withValidationErrors([
     body('amount').notEmpty().withMessage('El importe es requerido')
         .isFloat({ min: 0 }).withMessage('El importe debe ser un número positivo'),
     body('description')
-        .if(body('description').exists()).length({ min: 5, max: 300 }).withMessage('La descripción debe tener entre 5 y 300 caracteres'),
+        .if(body('description').exists()).isLength({ min: 5, max: 300 }).withMessage('La descripción debe tener entre 5 y 300 caracteres'),
     body('date').optional().isISO8601().withMessage('La fecha debe tener el formato ISO 8601'),
 ]);
 
@@ -58,7 +67,7 @@ const validateSale = withValidationErrors([
     body('variant').notEmpty().withMessage('La variante es requerida'),
     body('customer').notEmpty().withMessage('El cliente es requerido'),
     body('customer.name').notEmpty().withMessage('El nombre del cliente es requerido'),
-    body('customer.contact').optional().length({ min: 5, max: 50 }).withMessage('El contacto del cliente debe tener entre 5 y 50 caracteres'),
+    body('customer.contact').optional().isLength({ min: 5, max: 50 }).withMessage('El contacto del cliente debe tener entre 5 y 50 caracteres'),
     body('customer.phone').optional().isMobilePhone().withMessage('El teléfono del cliente debe ser válido'),
     body('quantitySold').notEmpty().withMessage('La cantidad vendida es requerida')
         .isInt({ min: 0 }).withMessage('La cantidad vendida debe ser un número positivo'),
@@ -88,6 +97,7 @@ const validateIdParam = (model) => {
 
 module.exports = {
     validateProduct,
+    validateProductUpdate,
     validateVariant,
     validateCost,
     validateSale,

@@ -82,6 +82,7 @@ const updateVariant = async(req, res) => {
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
     }
 };
+
 const deleteVariant = async(req, res) => {
     try {
         const deletedVariant = Variant.findByIdAndDelete(req.params.variantId);

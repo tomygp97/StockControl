@@ -10,9 +10,9 @@ const {
 } = require('../controllers/saleController');
 
 //! Verificar validaciones
-const { validateSale } = require('../middleware/validationMiddleware');
+const { validateSale, validateSaleIdParam } = require('../middleware/validationMiddleware');
 
-router.route('/').get(getAllSales).post(createSale);
-router.route('/:id').get(getSaleById).put(updateSale).delete(deleteSale);
+router.route('/').get(getAllSales).post(validateSale, createSale);
+router.route('/:id').get(validateSaleIdParam, getSaleById).put(validateSaleIdParam, validateSale, updateSale).delete(validateSaleIdParam, deleteSale);
 
 module.exports = router;
