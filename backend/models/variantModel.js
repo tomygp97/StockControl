@@ -17,6 +17,11 @@ const variantSchema = new Schema({
         required: true,
         default: 0,
         min: 0,
+    },
+    availability: {
+        type: String,
+        enum: ['Disponible', 'Agotado'],
+        default: 'Disponible',
     }
 })
 

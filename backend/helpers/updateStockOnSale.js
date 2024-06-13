@@ -4,9 +4,6 @@ const Variant = require('../models/variantModel');
 const updateStockOnSale = async (productId, variantId, quantitySold) => {
     
     const variant = await Variant.findById(variantId);
-    if (!variant) {
-        throw new Error('Variante no encontrada');
-    };
 
     // Actualiza la cantidad en stock de la variante
     variant.quantity -= quantitySold;

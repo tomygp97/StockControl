@@ -1,16 +1,18 @@
 const Variant = require('../models/variantModel');
 const Product = require('../models/productModel');
 const { StatusCodes } = require('http-status-codes');
+// Helpers
 const increaseStockOnNewVariant = require('../helpers/increaseStockOnNewVariant');
+const adjustStockOnVariantUpdate = require('../helpers/adjustStockOnVariantUpdate');
 
 const getAllVariants = async(req, res) => {
-        try {
-            const productId = req.params.id;
-            const product = await Product.findById(productId).populate('variants');
-            res.status(StatusCodes.OK).json({ variants: product.variants });
-        } catch (error) {
-            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
-        }
+    try {
+        const productId = req.params.id;
+        const product = await Product.findById(productId).populate('variants');
+        res.status(StatusCodes.OK).json({ variants: product.variants });
+    } catch (error) {
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
+    }
 };
 
 const getVariantById = async(req, res) => {
@@ -40,37 +42,24 @@ const createVariant = async(req, res) => {
     }
 };
 
-//TODO hacer las validaciones en un middleware
 const updateVariant = async(req, res) => {
     try {
-        const variantId = req.params.variantId;
+        const {id: productId, variantId} = req.params;
         const { color, size, quantity } = req.body;
-
         const currentVariant = await Variant.findById(variantId);
-        if (!currentVariant) {
-            return res.status(StatusCodes.NOT_FOUND).json({ error: 'Variante no encontrada' });
-        };
 
-        // calcula la diferencia de la cantidad solo si se ha proporcionado una nueva cantidad
+        // Verifica si la cantidad ha cambiado y calcula la diferencia
         let quantityDifference = 0;
-        if(quantity !== undefined) {
+        if(quantity !== undefined && quantity !== currentVariant.quantity) {
             quantityDifference = quantity - currentVariant.quantity;
-        };
+        }
 
-        // actualiza la variante con los nuevos valores
-        const updatedVariant = await Variant.findByIdAndUpdate(variantId, { color, size, quantity }, { new: true });
-        if (!updatedVariant) {
-            return res.status(StatusCodes.NOT_FOUND).json({ error: 'Variante no encontrada' });
-        };
+        // Actualiza la variante con los nuevos valores
+        const updatedVariant = await Variant.findByIdAndUpdate(variantId, {color, size, quantity}, {new: true});
 
-        // Si la cantidad ha cambiado, actualizo la cantidad total en stock del producto
+        // Si hay una diferencia en la cantidad, ajusta el stock
         if(quantityDifference !== 0) {
-            const product = await Product.findById(req.params.id);
-            if (!product) {
-                return res.status(StatusCodes.NOT_FOUND).json({ error: 'Producto no encontrado' });
-            };
-            product.quantityInStock += quantityDifference;
-            await product.save();
+            await adjustStockOnVariantUpdate(productId, quantityDifference);
         };
 
         res.status(StatusCodes.OK).json({ updatedVariant });
@@ -81,10 +70,30 @@ const updateVariant = async(req, res) => {
 
 const deleteVariant = async(req, res) => {
     try {
-        const deletedVariant = Variant.findByIdAndDelete(req.params.variantId);
-        if(!deletedVariant) {
-            return res.status(StatusCodes.NOT_FOUND).json({ error: 'Variante no encontrada' });
-        };
+        const {id: productId, variantId} = req.params;
+        const currentVariant = await Variant.findById(variantId);
+
+        // Elimino la variante
+        const deletedVariant = await Variant.findByIdAndDelete(variantId);
+
+        // Si la variante se eliminó correctamente, actualizo el stock del producto
+        if(deletedVariant) {
+            const product = await Product.findById(productId);
+            product.quantityInStock -= deletedVariant.quantity;
+
+            if (product.quantityInStock < 0) {
+                // TODO: Enviar un error de stock insuficiente
+                // product.quantityInStock = 0;
+                console.log("Stock negativo");
+            }
+
+            await product.save();
+
+        // Elimino la referencia de la variante del producto
+        product.variants.pull(variantId);
+        await product.save();
+        }
+        
         res.status(StatusCodes.OK).json({ deletedVariant });
     } catch (error) {
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });

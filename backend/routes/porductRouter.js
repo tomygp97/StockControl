@@ -24,7 +24,4 @@ router.route('/:id')
     .put(validateProductIdParam, validateProductUpdate, updateProduct)
     .delete(validateProductIdParam, deleteProduct);
 
-// router.route('/:id/variants').get(getAllVariants).post(validateVariant, createVariant);
-// router.route('/:id/variants/:variantId').get(validateVariantExists, getVariantById).put(validateVariantExists, validateVariantUpdate, updateVariant).delete(validateVariantExists, deleteVariant);
-
 module.exports = router;

@@ -24,7 +24,7 @@ const saleSchema = new Schema({
         },
         phone: {
             type: Number,
-            trimm: true,
+            trim: true,
         }
     },
     quantitySold: {
@@ -47,6 +47,11 @@ const saleSchema = new Schema({
     bill: {
         type: Boolean,
         default: false,
+    },
+    status: {
+        type: String,
+        enum: ['Pendiente', 'Completado', 'Cancelada'],
+        default: 'Pendiente',
     },
     date: {
         type: Date,

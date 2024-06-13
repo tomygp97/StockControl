@@ -83,6 +83,7 @@ const validateSale = withValidationErrors([
     body('paymentDetails').notEmpty().withMessage('Los detalles del pago son requeridos')
         .isIn(['Efectivo', 'Tarjeta', 'Transferencia']).withMessage('Los detalles del pago deben ser Efectivo, Tarjeta o Transferencia'),
     body('bill').optional().isBoolean().withMessage('El campo factura debe ser un valor booleano'),
+    body('status').isIn(['Pendiente', 'Completado', 'Cancelada']).withMessage('El estado debe ser Pendiente, Completado o Cancelada'),
 ]);
 
 //* Validate ID mongo
