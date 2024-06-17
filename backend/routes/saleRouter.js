@@ -11,8 +11,9 @@ const {
 
 //! Verificar validaciones
 const { validateSale, validateSaleIdParam } = require('../middleware/validationMiddleware');
+const { validateSaleProductAndVariant } = require('../middleware/entityValidationMiddleware');
 
-router.route('/').get(getAllSales).post(validateSale, createSale);
+router.route('/').get(getAllSales).post(validateSale, validateSaleProductAndVariant, createSale);
 router.route('/:id').get(validateSaleIdParam, getSaleById).put(validateSaleIdParam, validateSale, updateSale).delete(validateSaleIdParam, deleteSale);
 
 module.exports = router;

@@ -78,12 +78,11 @@ const validateSale = withValidationErrors([
     body('customer.phone').optional().isMobilePhone().withMessage('El teléfono del cliente debe ser válido'),
     body('quantitySold').notEmpty().withMessage('La cantidad vendida es requerida')
         .isInt({ min: 0 }).withMessage('La cantidad vendida debe ser un número positivo'),
-    body('totalPrice').notEmpty().withMessage('El precio total es requerido')
-        .isFloat({ min: 0 }).withMessage('El precio total debe ser un número positivo'),
-    body('paymentDetails').notEmpty().withMessage('Los detalles del pago son requeridos')
-        .isIn(['Efectivo', 'Tarjeta', 'Transferencia']).withMessage('Los detalles del pago deben ser Efectivo, Tarjeta o Transferencia'),
+    body('paymentDetails').notEmpty().withMessage('Los detalles del pago son requeridos'),
+    body('paymentDetails.method').notEmpty().withMessage('El metodo de pago es requerido')
+        .isIn(['Efectivo', 'Transferencia', 'Mercadopago']).withMessage('Los detalles del pago deben ser Efectivo, Transferencia o Mercadopago'),
     body('bill').optional().isBoolean().withMessage('El campo factura debe ser un valor booleano'),
-    body('status').isIn(['Pendiente', 'Completado', 'Cancelada']).withMessage('El estado debe ser Pendiente, Completado o Cancelada'),
+    body('status').optional().isIn(['Pendiente', 'Completado', 'Cancelada']).withMessage('El estado debe ser Pendiente, Completado o Cancelada'),
 ]);
 
 //* Validate ID mongo

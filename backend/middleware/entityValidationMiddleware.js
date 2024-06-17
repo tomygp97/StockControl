@@ -18,11 +18,34 @@ const validateVariantExists =  async (req, res, next) => {
         if (!variant) {
             return res.status(StatusCodes.NOT_FOUND).json({ error: 'Variante no encontrada para este producto' });
         };
+        req.product = product;
         req.variant = variant;
+        console.log("req.variant", req.variant);
         next();
     } catch (error) {
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
     };
 };
 
-module.exports = {validateVariantExists};
+const validateSaleProductAndVariant = async (req, res, next) => {
+    try {
+        const { product: productId, variant: variantId } = req.body;
+
+        const product = await Product.findById(productId);
+        if (!product) {
+            return res.status(StatusCodes.NOT_FOUND).json({ error: 'Producto no encontrado' });
+        }
+
+        const variant = await Variant.findById(variantId);
+        if (!variant) {
+            return res.status(StatusCodes.NOT_FOUND).json({ error: 'Variante no encontrada' });
+        }
+        req.product = product;
+        req.variant = variant;
+        next();
+    } catch (error) {
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
+    }
+}
+
+module.exports = {validateVariantExists, validateSaleProductAndVariant};

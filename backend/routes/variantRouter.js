@@ -10,7 +10,7 @@ const {
 } = require('../controllers/variantController');
 
 const { validateVariant, validateVariantUpdate, validateVariantIdParam } = require('../middleware/validationMiddleware');
-const { validateVariantExists } = require('../middleware/variantExistsMiddleware');
+const { validateVariantExists } = require('../middleware/entityValidationMiddleware');
 
 router.route('/').get(getAllVariants).post(validateVariant, createVariant);
 router.route('/:variantId').get(validateVariantExists, getVariantById).put(validateVariantExists, validateVariantUpdate, updateVariant).delete(validateVariantExists, deleteVariant);

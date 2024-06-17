@@ -6,29 +6,28 @@ const Variant = require('../models/variantModel');
 const Sale = require('../models/saleModel');
 
 // Helpers
-const { updateStockOnSale } = require('../helpers/updateStockOnSale');
-const { updateAvailability } = require('../helpers/updateAvailability');
+const updateStockOnSale = require('../helpers/updateStockOnSale');
+const updateAvailability = require('../helpers/updateAvailability');
 
 const saleService = {
     createSale: async (saleData) => {
+        // Iniciamos una transacción
+        const session = await mongoose.startSession();
+        session.startTransaction();
         try {
-            // Iniciamos una transacción
-            const session = await mongoose.startSession();
-            session.startTransaction();
+            const { product, variant, customer, quantitySold, paymentDetails, bill } = saleData;
     
-            const { productId, variantId, customer, quantitySold, paymentDetails, bill } = saleData;
-    
-            // Buscamos el producto
-            const product = await Product.findById(productId).populate('variants');
-    
+            // Buscamos el producto //! Ya no es necesario buscar ya que lo envio en saleData
+            // const product = await Product.findById(productId).populate('variants');
+            
             const totalPrice = product.price * quantitySold;
-    
-            await updateStockOnSale(productId, variantId, quantitySold);
-            await updateAvailability(variantId);
+
+            await updateStockOnSale(product._id, variant._id, quantitySold, session);
+            await updateAvailability(variant._id, session);
     
             const newSale = new Sale({
-                product: productId,
-                variant: variantId,
+                product: product._id,
+                variant: variant._id,
                 customer,
                 quantitySold,
                 totalPrice,
@@ -37,7 +36,7 @@ const saleService = {
                 date: new Date(),
             });
             
-            await newSale.save();
+            await newSale.save({ session });
     
             // Confirmamos la transacción
             await session.commitTransaction();
