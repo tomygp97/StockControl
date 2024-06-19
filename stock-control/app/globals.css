@@ -74,3 +74,66 @@
       @apply bg-background text-foreground;
     }
   }
+
+  :root {
+    /* Minimalista Moderno */
+    --color1: #FFFFFF ;
+    --color2: #000000 ;
+    --color3: #7B7D7D ;
+    --color4: #CCCCCC ;
+    --color5: #EAEDED ;
+    /* Neutros Calidos */
+    /* --color1: #FEF9E7  ;
+    --color2: #FCF3CF  ;
+    --color3: #F9E79F  ;
+    --color4: #F7DC6F  ;
+    --color5: #F4D03F  ; */
+    /* Verde y Gris */
+    /* --color1: #E8F8F5  ;
+    --color2: #D1F2EB  ;
+    --color3: #A3E4D7  ;
+    --color4: #76D7C4  ;
+    --color5: #1ABC9C  ; */
+    /* Gris y Blanco */
+    /* --color1: #FAFAFA  ;
+    --color2: #F0F0F0  ;
+    --color3: #D7DBDD  ;
+    --color4: #BDC3C7  ;
+    --color5: #7F8C8D  ; */
+    /* Monocromatica Azul */
+    /* --color1: #EBF5FB  ;
+    --color2: #D6EAF8  ;
+    --color3: #AED6F1  ;
+    --color4: #5DADE2  ;
+    --color5: #2E86C1  ; */
+  }
+
+  body {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  header {
+    width: 100%;
+    height: 50px;
+    /* background-color: #333; */
+    /* color: white; */
+    padding: 1rem;
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  main {
+    flex-grow: 1;
+    padding: 1rem;
+    margin-left: 50px;
+  }
+
+  .sideBar {
+    width: 250px;
+    background-color: #f4f4f4;
+    height: calc(100vh - 50px);
+    position: fixed;
+    top: 50px;
+  }

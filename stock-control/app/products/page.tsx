@@ -2,7 +2,12 @@ import React from 'react'
 
 const ProductsPage = () => {
     return (
-        <div>ProductsPage</div>
+        <div>
+            <h1>Product Page</h1>
+            <h1>Product Page</h1>
+            <h1>Product Page</h1>
+            <h1>Product Page</h1>
+        </div>
     )
 }
 
