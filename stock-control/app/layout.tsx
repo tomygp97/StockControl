@@ -30,7 +30,7 @@ export default function RootLayout({
     <ClerkProvider>
     <html lang="en">
       <body>
-        <header>
+        <header className="layout-header">
           <SignedOut>
             <SignInButton />
           </SignedOut>
