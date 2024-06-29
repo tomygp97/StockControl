@@ -29,7 +29,7 @@ export default function RootLayout({
   return (
     <ClerkProvider>
     <html lang="en">
-      <body>
+      <body className="dark">
         <header className="layout-header">
           <SignedOut>
             <SignInButton />
