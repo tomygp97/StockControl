@@ -10,6 +10,7 @@ import {
 import SalesTable from "./components/SalesTable"
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import SaleInfo from "./components/SaleInfo";
 
 const Sales = () => {
     return (
@@ -56,6 +57,9 @@ const Sales = () => {
                         </Card>
                     </div>
                     <SalesTable />
+                </div>
+                <div>
+                    <SaleInfo />
                 </div>
             </div>
         </div>

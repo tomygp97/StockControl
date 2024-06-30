@@ -46,7 +46,6 @@ function SalesTable() {
 
     
     const selectSale = (id: string) => {
-        // setActiveSaleId(id === activeSaleId ? null : id);
         if (id !== activeSaleId) {
             setActiveSaleId(id);
         }
