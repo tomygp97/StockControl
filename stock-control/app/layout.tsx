@@ -38,7 +38,7 @@ export default function RootLayout({
             <UserButton />
           </SignedIn>
         </header>
-        <hr />
+        {/* <hr /> */}
         <SideBar />
         <main>
           {children}
