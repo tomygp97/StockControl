@@ -12,20 +12,30 @@ import { Separator } from "@/components/ui/separator";
 import { Copy, CreditCard, MoreVertical, Truck } from "lucide-react";
 import { format } from 'date-fns';
 
+// Types
+import { Sale } from "@/types";
 
-const SaleInfo = () => {
+interface SaleInfoProps {
+    activeSale: (Sale & { saleNumber?: number }) | null;
+}
+
+const SaleInfo: React.FC<SaleInfoProps> = ({activeSale}) => {
+    const impuestos = 1000;
+
+    console.log("activeSale desde saleInfo: ", activeSale);
+
     return (
         <Card className="overflow-hidden">
             <CardHeader className="flex flex-row items-start bg-muted/50">
                 <div className="grid gap-0.5">
                     <CardTitle className="group flex items-center gap-2 text-lg">
-                        Venta #5
+                        Venta #{ activeSale?.saleNumber }
                         <Button size="icon" variant="outline" className="h-6 w-6 opacity-0 transition-opacity group-hover:opacity-100">
                             <Copy className="h-3 w-3" />
                             <span className="sr-only">Copy Ordedr ID</span>
                         </Button>
                     </CardTitle>
-                    <CardDescription>Fecha: 23-06-2024</CardDescription>
+                    <CardDescription>Fecha: { activeSale?.date &&format(new Date(activeSale.date), 'dd-MM-yyyy') }</CardDescription>
                 </div>
                 <div className="ml-auto flex items-center gap-1">
                     {/* <Button size="sm" variant="outline" className="h-8 gap-1">
@@ -50,11 +60,21 @@ const SaleInfo = () => {
             </CardHeader>
             <CardContent className="p-6 text-sm">
                 <div className="grid gap-3">
-                    <div className="font-semibold">Order Details</div>
+                    <div className="font-semibold">Detalle de Venta</div>
                     <ul className="grid gap-3">
+                        {/* {
+                            activeSale?.products.map((product) => (
+                                <li key={product._id} className="flex items-center justify-between">
+                                    <span className="text-muted-foreground">
+                                        { activeSale?.product.name } x{ activeSale?.quantitySold }
+                                    </span>
+                                    <span>$4999</span>
+                                </li>
+                            ))
+                        } */}
                         <li className="flex items-center justify-between">
                             <span className="text-muted-foreground">
-                                Zapatillas Deportivas x2
+                                { activeSale?.product.name } x{ activeSale?.quantitySold }
                             </span>
                             <span>$4999</span>
                         </li>
@@ -69,15 +89,15 @@ const SaleInfo = () => {
                     <ul className="grid gap-3">
                         <li className="flex items-center justify-between">
                             <span className="text-muted-foreground">Subtotal</span>
-                            <span>$11998</span>
+                            <span>${activeSale?.totalPrice}</span>
                         </li>
                         <li className="flex items-center justify-between">
                             <span className="text-muted-foreground">Impuestos</span>
-                            <span>$1000</span>
+                            <span>${impuestos}</span>
                         </li>
                         <li className="flex items-center justify-between font-semibold">
                             <span className="text-muted-foreground">Total</span>
-                            <span>$12998</span>
+                            <span>${ activeSale ? (activeSale.totalPrice + impuestos) : 0 }</span>
                         </li>
                     </ul>
                 </div>
@@ -104,18 +124,18 @@ const SaleInfo = () => {
                     <dl className="grid gap-3">
                         <div className="flex items-center justify-between">
                             <dt className="text-muted-foreground">Cliente</dt>
-                            <dd>Pedro Ramirez</dd>
+                            <dd>{ activeSale?.customer.name }</dd>
                         </div>
                         <div className="flex items-center justify-between">
                             <dt className="text-muted-foreground">Correo</dt>
                             <dd>
-                                <a href="mailto:">pedro@example.com</a>
+                                <a href="mailto:">{ activeSale?.customer.contact }</a>
                             </dd>
                         </div>
                         <div className="flex items-center justify-between">
                             <dt className="text-muted-foreground">Teléfono</dt>
                             <dd>
-                                <a href="tel:">+54 (264) 123-4567</a>
+                                <a href="tel:">+54 { activeSale?.customer.phone }</a>
                             </dd>
                         </div>
                     </dl>
@@ -126,8 +146,14 @@ const SaleInfo = () => {
                     <dl className="grid gap-3">
                         <div className="flex items-center justify-between">
                             <dt className="flex items-center text-muted-foreground">
+                                Método de Pago
+                            </dt>
+                            <dd>{ activeSale?.paymentDetails.method }</dd>
+                        </div>
+                        <div className="flex items-center justify-between">
+                            <dt className="flex items-center text-muted-foreground">
                                 <CreditCard className="h-4 w-4" />
-                                Transferencia
+                                Visa
                             </dt>
                             <dd>**** **** **** 4532</dd>
                         </div>

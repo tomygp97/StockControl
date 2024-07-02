@@ -1,3 +1,7 @@
+'use client'
+
+
+import { useState } from "react";
 import {
     Card,
     CardContent,
@@ -6,13 +10,21 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-
-import SalesTable from "./components/SalesTable"
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+
+import SalesTable from "./components/SalesTable"
 import SaleInfo from "./components/SaleInfo";
 
+// Types
+import { Sale } from "@/types";
+
 const Sales = () => {
+
+    const [activeSale, setActiveSale] = useState<Sale | null>(null);
+    console.log(activeSale);
+
+
     return (
         <div className="flex min-h-screen w-full flex-col md:ml-14">
             <div className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8 lg:grid-cols-3 xl:grid-cols-3">
@@ -56,10 +68,10 @@ const Sales = () => {
                             </CardFooter>
                         </Card>
                     </div>
-                    <SalesTable />
+                    <SalesTable activeSale={activeSale} setActiveSale={setActiveSale}/>
                 </div>
                 <div className="mr-14">
-                    <SaleInfo />
+                    <SaleInfo activeSale={activeSale} />
                 </div>
             </div>
         </div>

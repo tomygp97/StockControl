@@ -2,8 +2,6 @@ const Sale = require('../models/saleModel');
 const Product = require('../models/productModel');
 const { StatusCodes } = require('http-status-codes');
 
-// Helpers
-const updateStockOnSale = require('../helpers/updateStockOnSale');
 // Services
 const saleService = require('../services/saleServices');
 
@@ -26,12 +24,8 @@ const getSaleById = async (req, res) => {
 
 const createSale = async(req, res) => {
     try {
-        const saleData = {
-            ...req.body,
-            variant: req.variant,
-            product: req.product
-        }
-        const newSale = await saleService.createSale(saleData);
+        console.log("req.body desde createSale: ", req.body);
+        const newSale = await saleService.createSale(req.body);
         res.status(StatusCodes.CREATED).json({ newSale });
     } catch (error) {
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });

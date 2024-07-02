@@ -2,16 +2,28 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const saleSchema = new Schema({
-    product: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Product',
-        required: true,
-    },
-    variant: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Variant',
-        required: true,
-    },
+    productsSold: [{
+        product: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Product',
+            required: true,
+        },
+        variant: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Variant',
+            required: true,
+        },
+        quantitySold: {
+            type: Number,
+            required: true,
+            min: 0,
+        },
+        totalPrice : {
+            type: Number,
+            required: true,
+            min: 0,
+        },
+    }],
     customer: {
         name: {
             type: String,
@@ -25,17 +37,19 @@ const saleSchema = new Schema({
         phone: {
             type: Number,
             trim: true,
-        }
-    },
-    quantitySold: {
-        type: Number,
-        required: true,
-        min: 0,
-    },
-    totalPrice : {
-        type: Number,
-        required: true,
-        min: 0,
+        },
+        email: {
+            type: String,
+            trim: true,
+        },
+        address: {
+            type: String,
+            trim: true,
+        },
+        notes: {
+            type: String,
+            trim: true,
+        },
     },
     paymentDetails: {
         method: {

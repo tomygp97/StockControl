@@ -70,14 +70,15 @@ const validateCost = withValidationErrors([
 
 //* Sale Validations
 const validateSale = withValidationErrors([
-    body('product').notEmpty().withMessage('El producto es requerido'),
-    body('variant').notEmpty().withMessage('La variante es requerida'),
+    body('productsSold').notEmpty().withMessage('Los productos vendidos son requeridos').isArray({ min: 1 }).withMessage('Los productos vendidos son requeridos'),
+    body('productsSold.*.product').notEmpty().withMessage('El producto es requerido'),
+    body('productsSold.*.variant').notEmpty().withMessage('La variante es requerida'),
+    body('productsSold.*.quantitySold').notEmpty().withMessage('La cantidad vendida es requerida')
+        .isInt({ min: 0 }).withMessage('La cantidad vendida debe ser un número positivo'),
     body('customer').notEmpty().withMessage('El cliente es requerido'),
     body('customer.name').notEmpty().withMessage('El nombre del cliente es requerido'),
     body('customer.contact').optional().isLength({ min: 5, max: 50 }).withMessage('El contacto del cliente debe tener entre 5 y 50 caracteres'),
     body('customer.phone').optional().isMobilePhone().withMessage('El teléfono del cliente debe ser válido'),
-    body('quantitySold').notEmpty().withMessage('La cantidad vendida es requerida')
-        .isInt({ min: 0 }).withMessage('La cantidad vendida debe ser un número positivo'),
     body('paymentDetails').notEmpty().withMessage('Los detalles del pago son requeridos'),
     body('paymentDetails.method').notEmpty().withMessage('El metodo de pago es requerido')
         .isIn(['Efectivo', 'Transferencia', 'Mercadopago']).withMessage('Los detalles del pago deben ser Efectivo, Transferencia o Mercadopago'),

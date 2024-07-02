@@ -25,6 +25,11 @@ export interface Product {
 
 export interface Sale {
     _id: string;
+    // products:[{
+    //     product: Product;
+    //     variant: Variant;
+    //     quantitySold: number;
+    // }]
     product: Product;
     variant: Variant;
     customer: {

@@ -26,28 +26,34 @@ import { Sale } from "@/types";
 //! BORRAR DATOS DE EJEMPLO
 import exampleSales from "../data";
 
-function SalesTable() {
+interface SalesTableProps {
+    activeSale: (Sale & { saleNumber?: number }) | null;
+    setActiveSale: (sale: (Sale & { saleNumber?: number }) | null) => void;
+}
+
+const SalesTable: React.FC<SalesTableProps> = ({activeSale, setActiveSale}) => {
     const [sales, setSales] = useState<Sale[]>(exampleSales);
-    const [activeSaleId, setActiveSaleId] = useState<string | null>(null);
-    // const [isActive, setIsActive] = useState(false);
-    console.log(sales);
-    console.log(activeSaleId);
 
     const getSales = async() => {
         // Remplazar con llamada a la API
         setSales(exampleSales);
-        if ( sales.length > 0 ) {
-            setActiveSaleId(sales[sales.length - 1]._id);
+        if ( sales.length > 0 && !activeSale) {
+            setActiveSale({...exampleSales[exampleSales.length - 1], saleNumber: exampleSales.length });
         }
     };
+
     useEffect(() => {
         getSales();
     }, []);
 
-    
-    const selectSale = (id: string) => {
-        if (id !== activeSaleId) {
-            setActiveSaleId(id);
+    const selectSale = (id: Sale['_id']) => {
+        const selectedSaleIndex = sales.findIndex(sale => sale._id === id);
+        if (selectedSaleIndex !== -1) {
+            const selectedSale = sales[selectedSaleIndex];
+            const saleNumber = selectedSaleIndex + 1; // Calcula el número de venta basado en el orden inverso
+            if (selectedSale._id !== activeSale?._id) {
+                setActiveSale({ ...selectedSale, saleNumber });
+            }
         }
     };
 
@@ -72,7 +78,7 @@ function SalesTable() {
                             <TableHeader>
                                 <TableRow>
                                     <TableHead className="hidden sm:table-cell">
-                                        Pedido
+                                        Venta N°
                                     </TableHead>
                                     <TableHead className="hidden sm:table-cell">
                                         Cliente
@@ -90,26 +96,29 @@ function SalesTable() {
                             </TableHeader>
                             <TableBody>
                                 {
-                                    sales.slice().reverse().map((sale, index, arr) => (
-                                        <TableRow key={sale._id} onClick={() => selectSale(sale._id)} className={ sale._id === activeSaleId ? "bg-accent" : "" }>
-                                            <TableCell>
-                                                #{ arr.length - index }
-                                            </TableCell>
-                                            <TableCell>
-                                                <div className="font-medium">{ sale.customer.name }</div>
-                                                <div className="hidden text-sm text-muted-foreground md:inline">{ sale.customer.contact }</div>
-                                            </TableCell>
-                                            <TableCell className="hidden md:table-cell">
-                                                { format(new Date(sale.date), 'dd-MM-yyyy') }
-                                            </TableCell>
-                                            <TableCell className="hidden md:table-cell">
-                                                { sale.paymentDetails.method }
-                                            </TableCell>
-                                            <TableCell className="text-right">
-                                                $ { sale.totalPrice }
-                                            </TableCell>
-                                        </TableRow>
-                                    ))
+                                    sales.slice().reverse().map((sale, index, arr) => {
+                                        const saleNumber = arr.length - index;
+                                        return (
+                                            <TableRow key={sale._id} onClick={() => selectSale(sale._id)} className={ sale._id === activeSale?._id ? "bg-accent" : "" }>
+                                                <TableCell>
+                                                    # {saleNumber}
+                                                </TableCell>
+                                                <TableCell>
+                                                    <div className="font-medium">{ sale.customer.name }</div>
+                                                    <div className="hidden text-sm text-muted-foreground md:inline">{ sale.customer.contact }</div>
+                                                </TableCell>
+                                                <TableCell className="hidden md:table-cell">
+                                                    { format(new Date(sale.date), 'dd-MM-yyyy') }
+                                                </TableCell>
+                                                <TableCell className="hidden md:table-cell">
+                                                    { sale.paymentDetails.method }
+                                                </TableCell>
+                                                <TableCell className="text-right">
+                                                    $ { sale.totalPrice }
+                                                </TableCell>
+                                            </TableRow>
+                                        )
+                                    })
                                 }
                             </TableBody>
                         </Table>
