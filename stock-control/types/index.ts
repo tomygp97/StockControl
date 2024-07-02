@@ -25,20 +25,20 @@ export interface Product {
 
 export interface Sale {
     _id: string;
-    // products:[{
-    //     product: Product;
-    //     variant: Variant;
-    //     quantitySold: number;
-    // }]
-    product: Product;
-    variant: Variant;
+    productsSold: {
+        product: Product;
+        variant: Variant;
+        quantitySold: number;
+        totalPrice: number;
+    };
     customer: {
         name: string;
         contact?: string;
         phone?: number;
+        email: string;
+        address: string;
+        notes: string;
     };
-    quantitySold: number;
-    totalPrice: number;
     paymentDetails: {
         method: 'Efectivo' | 'Transferencia' | 'Mercadopago';
     };

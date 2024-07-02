@@ -79,6 +79,9 @@ const validateSale = withValidationErrors([
     body('customer.name').notEmpty().withMessage('El nombre del cliente es requerido'),
     body('customer.contact').optional().isLength({ min: 5, max: 50 }).withMessage('El contacto del cliente debe tener entre 5 y 50 caracteres'),
     body('customer.phone').optional().isMobilePhone().withMessage('El teléfono del cliente debe ser válido'),
+    body('customer.email').optional().isEmail().withMessage('El correo electrónico del cliente debe ser válido'),
+    body('customer.address').optional().isLength({ min: 5, max: 50 }).withMessage('La dirección del cliente debe tener entre 5 y 50 caracteres'),
+    body('customer.notes').optional().isLength({ min: 5, max: 300 }).withMessage('Las notas del cliente deben tener entre 5 y 300 caracteres'),
     body('paymentDetails').notEmpty().withMessage('Los detalles del pago son requeridos'),
     body('paymentDetails.method').notEmpty().withMessage('El metodo de pago es requerido')
         .isIn(['Efectivo', 'Transferencia', 'Mercadopago']).withMessage('Los detalles del pago deben ser Efectivo, Transferencia o Mercadopago'),
