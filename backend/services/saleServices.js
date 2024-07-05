@@ -10,7 +10,6 @@ const updateStockOnSale = require('../helpers/updateStockOnSale');
 const updateAvailability = require('../helpers/updateAvailability');
 
 const saleService = {
-
     createSale: async (saleData) => {
         let session;
 
@@ -25,7 +24,7 @@ const saleService = {
             session = await mongoose.startSession();
             session.startTransaction();
 
-            const newSales =[];
+            const productsSoldWithDetails = [];
 
             for (const productSold of productsSold) {
                 const { product, variant, quantitySold } = productSold;
@@ -37,13 +36,16 @@ const saleService = {
                 await updateStockOnSale(product, variant, quantitySold, session);
                 await updateAvailability(variant, session);
 
+                productsSoldWithDetails.push({
+                    product,
+                    variant,
+                    quantitySold,
+                    totalPrice,
+                });
+            }
+
                 const newSale = new Sale({
-                    productsSold: [{
-                        product,
-                        variant,
-                        quantitySold,
-                        totalPrice,
-                    }],
+                    productsSold: productsSoldWithDetails,
                     customer,
                     paymentDetails,
                     bill: bill || false,
@@ -51,14 +53,12 @@ const saleService = {
                     date: new Date(),
                 });
 
-                await newSale.save({ session });
-                newSales.push(newSale);
-            }
+                await newSale.save({ session });            
     
             // Confirmamos la transacción
             await session.commitTransaction();
 
-            return newSales;
+            return newSale;
         } catch (error) {
             console.log("Error en createSale: ",error);
             // Si algo sale mal, revierte los cambios

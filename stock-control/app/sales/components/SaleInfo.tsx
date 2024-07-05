@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/card";
 import { DropdownMenuContent, DropdownMenuItem, DropdownMenu, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
-import { Copy, CreditCard, MoreVertical, Truck } from "lucide-react";
+import { Copy, CreditCard, MoreVertical, Printer } from "lucide-react";
 import { format } from 'date-fns';
 
 // Types
@@ -22,7 +22,6 @@ interface SaleInfoProps {
 const SaleInfo: React.FC<SaleInfoProps> = ({activeSale}) => {
     const impuestos = 1000;
 
-    console.log("activeSale desde saleInfo: ", activeSale);
 
     return (
         <Card className="overflow-hidden">
@@ -38,12 +37,12 @@ const SaleInfo: React.FC<SaleInfoProps> = ({activeSale}) => {
                     <CardDescription>Fecha: { activeSale?.date &&format(new Date(activeSale.date), 'dd-MM-yyyy') }</CardDescription>
                 </div>
                 <div className="ml-auto flex items-center gap-1">
-                    {/* <Button size="sm" variant="outline" className="h-8 gap-1">
-                        <Truck className="h-3.5 w-3.5" />
+                    <Button size="sm" variant="outline" className="h-8 gap-1">
+                        <Printer className="h-3.5 w-3.5" />
                         <span className="lg:sr-only xl:not-sr-only xl:whitespace-nowrap">
-                            Track Order
+                            Imprimir
                         </span>
-                    </Button> */}
+                    </Button>
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <Button size="icon" variant="outline" className="h-8 w-8">
@@ -62,34 +61,22 @@ const SaleInfo: React.FC<SaleInfoProps> = ({activeSale}) => {
                 <div className="grid gap-3">
                     <div className="font-semibold">Detalle de Venta</div>
                     <ul className="grid gap-3">
-                        {/* {
-                            activeSale?.products.map((product) => (
-                                <li key={product._id} className="flex items-center justify-between">
-                                    <span className="text-muted-foreground">
-                                        { activeSale?.product.name } x{ activeSale?.quantitySold }
-                                    </span>
-                                    <span>$4999</span>
+                        {
+                            activeSale?.productsSold.map((productSold) => (
+                                <li key={`${productSold.product._id}-${productSold.variant._id}`} className="flex items-center justify-between">
+                                        <span className="text-muted-foreground">
+                                            { productSold.product.name } x{ productSold.quantitySold }
+                                        </span>
+                                    <span>${productSold.totalPrice}</span>
                                 </li>
                             ))
-                        } */}
-                        <li className="flex items-center justify-between">
-                            <span className="text-muted-foreground">
-                                { activeSale?.product.name } x{ activeSale?.quantitySold }
-                            </span>
-                            <span>$4999</span>
-                        </li>
-                        <li className="flex items-center justify-between">
-                            <span className="text-muted-foreground">
-                            Mochila Deportiva x1
-                            </span>
-                            <span>$6999</span>
-                        </li>
+                        }
                     </ul>
                     <Separator className="my-2" />
                     <ul className="grid gap-3">
                         <li className="flex items-center justify-between">
                             <span className="text-muted-foreground">Subtotal</span>
-                            <span>${activeSale?.totalPrice}</span>
+                            <span>${activeSale?.productsSold?.reduce((total, item) => total + item.totalPrice, 0)}</span>
                         </li>
                         <li className="flex items-center justify-between">
                             <span className="text-muted-foreground">Impuestos</span>
@@ -97,11 +84,12 @@ const SaleInfo: React.FC<SaleInfoProps> = ({activeSale}) => {
                         </li>
                         <li className="flex items-center justify-between font-semibold">
                             <span className="text-muted-foreground">Total</span>
-                            <span>${ activeSale ? (activeSale.totalPrice + impuestos) : 0 }</span>
+                            <span>${(activeSale?.productsSold?.reduce((total, item) => total + item.totalPrice, 0) || 0) + impuestos}</span>
                         </li>
                     </ul>
                 </div>
-                {/* <Separator className="my-4" />
+                <Separator className="my-4" />
+
                 <div className="grid grid-cols-2 gap-4">
                     <div className="grid gap-3">
                         <div className="font-semibold">Shipping Information</div>
@@ -117,7 +105,7 @@ const SaleInfo: React.FC<SaleInfoProps> = ({activeSale}) => {
                             Same as shipping address
                         </div>
                     </div>
-                </div> */}
+                </div>
                 <Separator className="my-4" />
                 <div className="grid gap-3">
                     <div className="font-semibold">Información del Cliente</div>

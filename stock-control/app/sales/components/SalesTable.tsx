@@ -34,6 +34,8 @@ interface SalesTableProps {
 const SalesTable: React.FC<SalesTableProps> = ({activeSale, setActiveSale}) => {
     const [sales, setSales] = useState<Sale[]>(exampleSales);
 
+    const impuestos = 1000;
+
     const getSales = async() => {
         // Remplazar con llamada a la API
         setSales(exampleSales);
@@ -47,14 +49,16 @@ const SalesTable: React.FC<SalesTableProps> = ({activeSale, setActiveSale}) => {
     }, []);
 
     const selectSale = (id: Sale['_id']) => {
-        const selectedSaleIndex = sales.findIndex(sale => sale._id === id);
-        if (selectedSaleIndex !== -1) {
-            const selectedSale = sales[selectedSaleIndex];
+        const selectedSale = sales.find(sale => sale._id === id);
+        if (selectedSale && selectedSale._id !== activeSale?._id) {
+            const selectedSaleIndex = sales.findIndex(sale => sale._id === id);
             const saleNumber = selectedSaleIndex + 1; // Calcula el número de venta basado en el orden inverso
-            if (selectedSale._id !== activeSale?._id) {
-                setActiveSale({ ...selectedSale, saleNumber });
-            }
+            setActiveSale({ ...selectedSale, saleNumber });
         }
+    };
+
+    const calculateTotalPrice = (productsSold: Sale['productsSold']) => {
+        return productsSold.reduce((total, item) => total + item.totalPrice, 0);
     };
 
 
@@ -105,17 +109,20 @@ const SalesTable: React.FC<SalesTableProps> = ({activeSale, setActiveSale}) => {
                                                 </TableCell>
                                                 <TableCell>
                                                     <div className="font-medium">{ sale.customer.name }</div>
-                                                    <div className="hidden text-sm text-muted-foreground md:inline">{ sale.customer.contact }</div>
+                                                    <div className="hidden text-sm text-muted-foreground md:inline">{ sale.customer.email }</div>
                                                 </TableCell>
                                                 <TableCell className="hidden md:table-cell">
-                                                    { format(new Date(sale.date), 'dd-MM-yyyy') }
+                                                    { format(new Date(sale.date), 'yyyy-MM-dd hh:mm a') }
                                                 </TableCell>
                                                 <TableCell className="hidden md:table-cell">
                                                     { sale.paymentDetails.method }
                                                 </TableCell>
                                                 <TableCell className="text-right">
-                                                    $ { sale.totalPrice }
+                                                    $ { calculateTotalPrice(sale.productsSold) + impuestos }
                                                 </TableCell>
+                                                {/* <TableCell className="text-right">
+                                                    $ { sale.productsSold.totalPrice }
+                                                </TableCell> */}
                                             </TableRow>
                                         )
                                     })

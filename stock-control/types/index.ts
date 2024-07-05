@@ -28,23 +28,25 @@ export interface Sale {
     productsSold: {
         product: Product;
         variant: Variant;
+        // product: string;
+        // variant: string;
         quantitySold: number;
         totalPrice: number;
-    };
+    }[];
     customer: {
         name: string;
         contact?: string;
         phone?: number;
-        email: string;
-        address: string;
-        notes: string;
+        email?: string | undefined;
+        address?: string | undefined;
+        notes?: string | undefined;
     };
     paymentDetails: {
         method: 'Efectivo' | 'Transferencia' | 'Mercadopago';
     };
     bill: boolean;
     status: 'Pendiente' | 'Completado' | 'Cancelada';
-    date: string; // Assuming date is stored as a string
+    date: string;
     createdAt: string;
     updatedAt: string;
     __v: number;
