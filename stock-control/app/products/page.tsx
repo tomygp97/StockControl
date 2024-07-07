@@ -1,25 +1,10 @@
 'use client'
 
 import { useEffect, useState } from "react";
-// import Link from "next/link";
-// import Image from "next/image";
 import {
-    Eye,
     File,
-    Home,
-    LineChart,
     ListFilter,
-    MoreHorizontal,
-    Package,
-    Package2,
-    PanelLeft,
-    Pencil,
     PlusCircle,
-    Search,
-    Settings,
-    ShoppingCart,
-    Trash,
-    Users2,
 } from "lucide-react";
 import {
     Tabs,
@@ -27,14 +12,6 @@ import {
     TabsList,
     TabsTrigger,
 } from "@/components/ui/tabs";
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table";
 import {
     DropdownMenu,
     DropdownMenuCheckboxItem,
@@ -52,10 +29,7 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-// import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button";
-// import { Input } from "@/components/ui/input"
 
 import { Product } from "@/types";
 //! DATA DE PRUEBA
@@ -68,6 +42,8 @@ import { fetchAllProducts } from "../api/apiService";
 const ProductsPage = () => {
 
     const [productsList, setProductsList] = useState<Product[]>([]);
+    const [availableProducts, setAvailableProducts] = useState<Product[]>([])
+    const [outOfStockProducts, setOtuOfStockProducts] = useState<Product[]>([])
     console.log(productsList);
 
     // const fetchProductsData = async() => {
@@ -83,9 +59,12 @@ const ProductsPage = () => {
     //     fetchProductsData();
     // }, [])
     
+
     useEffect(() => {
-        setProductsList(products)
-    }, [])
+        setProductsList(products);
+        setAvailableProducts(products.filter((product) => product.quantityInStock > 0));
+        setOtuOfStockProducts(products.filter(product => product.quantityInStock === 0));
+    }, []);
 
 
     return (
@@ -97,8 +76,8 @@ const ProductsPage = () => {
                     <div className="flex items-center">
                     <TabsList>
                         <TabsTrigger value="all">Todos</TabsTrigger>
-                        <TabsTrigger value="active">Disponibles</TabsTrigger>
-                        <TabsTrigger value="draft">Agotados</TabsTrigger>
+                        <TabsTrigger value="available">Disponibles</TabsTrigger>
+                        <TabsTrigger value="outOfStock">Agotados</TabsTrigger>
                     </TabsList>
                     <div className="ml-auto flex items-center gap-2">
                         <DropdownMenu>
@@ -137,23 +116,61 @@ const ProductsPage = () => {
                     </div>
                     </div>
                     <TabsContent value="all">
-                    <Card x-chunk="dashboard-06-chunk-0">
-                        <CardHeader>
-                            <CardTitle>Productos</CardTitle>
-                            <CardDescription>
-                                Visualiza los productos registrados.
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <ProductTable products={productsList} />
-                        </CardContent>
-                        <CardFooter>
-                        <div className="text-xs text-muted-foreground">
-                            Mostrando <strong>5</strong> de <strong>20</strong>{" "}
-                            productos
-                        </div>
-                        </CardFooter>
-                    </Card>
+                        <Card x-chunk="dashboard-06-chunk-0">
+                            <CardHeader>
+                                <CardTitle>Productos</CardTitle>
+                                <CardDescription>
+                                    Visualiza los productos registrados.
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <ProductTable products={productsList} />
+                            </CardContent>
+                            <CardFooter>
+                            <div className="text-xs text-muted-foreground">
+                                Mostrando <strong>{`${productsList.length}`}</strong>{" "}
+                                producto{productsList.length > 1 ? "s" : ""}
+                            </div>
+                            </CardFooter>
+                        </Card>
+                    </TabsContent>
+                    <TabsContent value="available">
+                        <Card x-chunk="dashboard-06-chunk-0">
+                            <CardHeader>
+                                <CardTitle>Productos Disponibles</CardTitle>
+                                <CardDescription>
+                                    Visualiza los productos disponibles.
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <ProductTable products={availableProducts} />
+                            </CardContent>
+                            <CardFooter>
+                            <div className="text-xs text-muted-foreground">
+                                Mostrando <strong>{`${availableProducts.length}`}</strong>{" "}
+                                producto{availableProducts.length > 1 ? "s" : ""}
+                            </div>
+                            </CardFooter>
+                        </Card>
+                    </TabsContent>
+                    <TabsContent value="outOfStock">
+                        <Card x-chunk="dashboard-06-chunk-0">
+                            <CardHeader>
+                                <CardTitle>Productos Agotados</CardTitle>
+                                <CardDescription>
+                                    Visualiza los productos agotados.
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <ProductTable products={outOfStockProducts} />
+                            </CardContent>
+                            <CardFooter>
+                            <div className="text-xs text-muted-foreground">
+                                Mostrando <strong>{`${outOfStockProducts.length}`}</strong>{" "}
+                                producto{outOfStockProducts.length > 1 ? "s" : ""}
+                            </div>
+                            </CardFooter>
+                        </Card>
                     </TabsContent>
                 </Tabs>
             </main>
