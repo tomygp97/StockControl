@@ -33,42 +33,54 @@ import { Button } from "@/components/ui/button";
 
 import { Product } from "@/types";
 //! DATA DE PRUEBA
-import products from "./data/products";
+// import products from "./data/products";
 
 import ProductTable from "./components/ProductTable";
 import { fetchAllProducts } from "../api/apiService";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+// import { useRouter } from "next/router";
 
 
 const ProductsPage = () => {
+    const router = useRouter();
 
     const [productsList, setProductsList] = useState<Product[]>([]);
     const [availableProducts, setAvailableProducts] = useState<Product[]>([])
     const [outOfStockProducts, setOtuOfStockProducts] = useState<Product[]>([])
-    console.log(productsList);
+    // console.log("productsList: ", productsList);
 
-    // const fetchProductsData = async() => {
-    //     try {
-    //         const productsData = await fetchAllProducts();
-    //         setProductsList(productsData);
-    //     } catch (error) {
-            
-    //     }
-    // }
+    const fetchProductsData = async() => {
+        try {
+            const productsData = await fetchAllProducts();
+            setProductsList(productsData);
+        } catch (error) {
+            console.log(error);
+        }
+    }
 
-    // useEffect(() => {
-    //     fetchProductsData();
-    // }, [])
+    useEffect(() => {
+        fetchProductsData();
+    }, [])
     
 
     useEffect(() => {
-        setProductsList(products);
-        setAvailableProducts(products.filter((product) => product.quantityInStock > 0));
-        setOtuOfStockProducts(products.filter(product => product.quantityInStock === 0));
-    }, []);
+        setAvailableProducts(productsList.filter((product) => product.quantityInStock > 0));
+        setOtuOfStockProducts(productsList.filter(product => product.quantityInStock === 0));
+    }, [productsList]);
 
+    // useEffect(() => {
+    //     setProductsList(products);
+    //     setAvailableProducts(products.filter((product) => product.quantityInStock > 0));
+    //     setOtuOfStockProducts(products.filter(product => product.quantityInStock === 0));
+    // }, []);
+
+    const handleNavigateToNewProduct = () => {
+        router.push("/products/new-product");
+    };
 
     return (
-        <div className="flex flex-col sm:gap-4 md:ml-14">
+        <div className="flex flex-col sm:gap-4">
             <div className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
             </div>
             <main className="grid flex-1 items-start sm:px-6 sm:py-0 md:gap-8">
@@ -107,7 +119,7 @@ const ProductsPage = () => {
                                 Export
                             </span>
                         </Button>
-                        <Button size="sm" className="h-8 gap-1">
+                        <Button size="sm" className="h-8 gap-1" onClick={handleNavigateToNewProduct}>
                             <PlusCircle className="h-3.5 w-3.5" />
                             <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
                                 Nuevo Producto

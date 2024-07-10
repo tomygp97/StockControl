@@ -20,7 +20,6 @@ const validateVariantExists =  async (req, res, next) => {
         };
         req.product = product;
         req.variant = variant;
-        console.log("req.variant", req.variant);
         next();
     } catch (error) {
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });

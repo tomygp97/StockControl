@@ -9,6 +9,7 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { Eye, Pencil, Trash } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 import { Product } from "@/types";
 
@@ -17,6 +18,12 @@ interface ProductTableProps {
 }
 
 const ProductTable: React.FC<ProductTableProps> = ({products}) => {
+    const router = useRouter();
+
+    const handleNavigateToEditProduct = (id: string) => {
+        router.push(`/products/${id}`);
+    };
+
     return (
         <Table>
             <TableHeader>
@@ -67,7 +74,7 @@ const ProductTable: React.FC<ProductTableProps> = ({products}) => {
                         <Button variant="ghost" size="sm">
                             <Eye />
                         </Button>
-                        <Button variant="ghost" size="sm">
+                        <Button variant="ghost" size="sm" onClick={() => handleNavigateToEditProduct(product._id)}>
                             <Pencil />
                         </Button>
                         <Button variant="ghost" size="sm">

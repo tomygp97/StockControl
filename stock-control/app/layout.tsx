@@ -40,7 +40,7 @@ export default function RootLayout({
         </header>
         {/* <hr /> */}
         <SideBar />
-        <main>
+        <main className="md:ml-14">
           {children}
         </main>
       </body>

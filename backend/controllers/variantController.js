@@ -4,6 +4,7 @@ const { StatusCodes } = require('http-status-codes');
 // Helpers
 const increaseStockOnNewVariant = require('../helpers/increaseStockOnNewVariant');
 const adjustStockOnVariantUpdate = require('../helpers/adjustStockOnVariantUpdate');
+const updateAvailability = require('../helpers/updateAvailability');
 
 const getAllVariants = async(req, res) => {
     try {
@@ -28,13 +29,17 @@ const createVariant = async(req, res) => {
     try {
         const newVariant = new Variant({ ...req.body });
         await newVariant.save();
-
+        
         const product = await Product.findById(req.params.id);
         // Agrego Id de variante a la lista de variantes
         product.variants.push(newVariant._id);
         await product.save();
         // Actualizo el stock
         await increaseStockOnNewVariant(product._id, newVariant.quantity);
+        
+        // Actualizo la disponibilidad de la variante
+        await updateAvailability(newVariant._id);
+        
 
         res.status(StatusCodes.CREATED).json({ newVariant });
     } catch (error) {
@@ -70,30 +75,28 @@ const updateVariant = async(req, res) => {
 
 const deleteVariant = async(req, res) => {
     try {
-        const {id: productId, variantId} = req.params;
-        const currentVariant = await Variant.findById(variantId);
+        const { id: productId, variantId } = req.params;
 
-        // Elimino la variante
+        // Elimina la variante
         const deletedVariant = await Variant.findByIdAndDelete(variantId);
 
-        // Si la variante se eliminó correctamente, actualizo el stock del producto
-        if(deletedVariant) {
-            const product = await Product.findById(productId);
-            product.quantityInStock -= deletedVariant.quantity;
+        // Actualiza el producto para quitar la referencia de la variante eliminada
+        const updatedProduct = await Product.findByIdAndUpdate(
+            productId,
+            { $pull: { variants: variantId } },
+            { new: true }
+        );
 
-            if (product.quantityInStock < 0) {
-                // TODO: Enviar un error de stock insuficiente
-                // product.quantityInStock = 0;
-                console.log("Stock negativo");
-            }
-
-            await product.save();
-
-        // Elimino la referencia de la variante del producto
-        product.variants.pull(variantId);
-        await product.save();
+        // Actualiza el stock del producto
+        updatedProduct.quantityInStock -= deletedVariant.quantity;
+        if (updatedProduct.quantityInStock < 0) {
+            updatedProduct.quantityInStock = 0;
+            // TODO: Enviar un error de stock insuficiente si es necesario
         }
-        
+
+        // Guarda el producto actualizado
+        await updatedProduct.save();
+
         res.status(StatusCodes.OK).json({ deletedVariant });
     } catch (error) {
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
