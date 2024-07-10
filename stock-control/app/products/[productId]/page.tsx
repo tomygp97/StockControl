@@ -30,6 +30,7 @@ import {
     DialogHeader,
     DialogTitle,
     DialogTrigger,
+    DialogClose,
 } from "@/components/ui/dialog";
 import {
     Select,
@@ -43,13 +44,32 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { ChevronLeft, PlusCircle } from "lucide-react";
 import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 import VariantTable from "../components/VariantTable";
 import { createVariant, fetchAllVariantsByProductId, fetchSingleProduct } from "@/app/api/apiService";
 
 // Types
 import { Product, Variant } from "@/types";
-import { DialogClose } from "@radix-ui/react-dialog";
+import { useForm } from "react-hook-form";
+import VariantCard from "../components/VariantCard";
+import ProductCard from "../components/ProductCard";
+
+const ProductSchema = z.object({
+    name: z.string().min(1, { message: "Nombre es requerido" }),
+    category: z.string().min(1, { message: "Categoría es requerida" }),
+    description: z.string().min(1, { message: "Descripción es requerida" }),
+    price: z.number().min(1, { message: "El precio es requerido" }),
+    quantityInStock: z.number().min(1, { message: "La Cantidad en Stock es requerida" }),
+    variantsId: z.array(z.string()),
+});
+
+    //! Dentro de VariantCard
+// const VariantSchema = z.object({
+//     color: z.string().min(1, { message: "Color es requerido" }),
+//     size: z.string().min(1, { message: "Talle es requerido" }),
+//     quantity: z.number().min(0, { message: "La Cantidad es requerida" }),
+// });
 
 
 const EditProduct = () => {
@@ -94,6 +114,28 @@ const EditProduct = () => {
         };
         console.log("Variante creada con los datos:", newVariant);
     };
+
+    const productsForm = useForm<z.infer<typeof ProductSchema>>({
+        resolver: zodResolver(ProductSchema),
+        defaultValues: {
+            name: productData.name,
+            category: productData.category,
+            description: productData.description,
+            price: productData.price,
+            quantityInStock: productData.quantityInStock,
+            variantsId: [],
+        }
+    });
+
+    //! Dentro de VariantCard
+    // const variantsForm = useForm<z.infer<typeof VariantSchema>>({
+    //     resolver: zodResolver(VariantSchema),
+    //     defaultValues: {
+    //         color: "",
+    //         size: "",
+    //         quantity: 0,
+    //     }
+    // });
     
     return (
         <div className="flex min-h-screen w-full flex-col bg-muted/40">
@@ -142,107 +184,12 @@ const EditProduct = () => {
                         </div>
                         <div className="grid gap-4 md:grid-cols-[1fr_250px] lg:grid-cols-3 lg:gap-8">
                             <div className="grid auto-rows-max items-start gap-4 lg:col-span-2 lg:gap-8">
-                                <Card>
-                                    <CardHeader>
-                                        <CardTitle>Detalles del producto</CardTitle>
-                                        <CardDescription>
-                                            Lipsum dolor sit amet, consectetur adipiscing elit
-                                        </CardDescription>
-                                    </CardHeader>
-                                    <CardContent>
-                                        <div className="grid gap-6">
-                                            <div className="grid gap-3">
-                                                <Label htmlFor="name">Nombre</Label>
-                                                <Input id="name" type="text" className="w-full" defaultValue={productData.name} />
-                                            </div>
-                                            <div className="grid gap-3">
-                                                <Label htmlFor="name">Categoría</Label>
-                                                <Input id="category" type="text" className="w-full" defaultValue={productData.category} />
-                                            </div>
-                                            <div className="grid gap-3">
-                                                <Label htmlFor="description">Descripción</Label>
-                                                <Textarea id="description" className="min-h-24" defaultValue={productData.description} />
-                                            </div>
-                                        </div>
-                                    </CardContent>
-                                </Card>
-                                <Card>
-                                    <CardHeader>
-                                        <CardTitle>Variantes</CardTitle>
-                                        <CardDescription>Detalles de las variantes</CardDescription>
-                                    </CardHeader>
-                                    <CardContent>
-                                        {variantsData && <VariantTable variants={variantsData} />}
-                                    </CardContent>
-                                    <CardFooter className="justify-center border-t p-4">
-                                        <Dialog>
-                                            <DialogTrigger asChild>
-                                                <Button size="sm" variant="ghost" className="gap-1">
-                                                    <PlusCircle className="h3.5 w-3.5" />
-                                                    Agregar Variante
-                                                </Button>
-                                            </DialogTrigger>
-                                            <DialogContent>
-                                                <DialogHeader>
-                                                    <DialogTitle>Crear Nueva Variante</DialogTitle>
-                                                    <DialogDescription>
-                                                        Ingresar los valores para la nueva variante
-                                                    </DialogDescription>
-                                                </DialogHeader>
-                                                <div className="grid gap-4 py-4">
-                                                    <div className="grid grid-cols-4 items-center gap-4">
-                                                        <Label htmlFor="color">Color</Label>
-                                                        <Select>
-                                                            <SelectTrigger id="color">
-                                                                <SelectValue placeholder="Color"/>
-                                                            </SelectTrigger>
-                                                            <SelectContent>
-                                                                <SelectItem value="Azul">Azul</SelectItem>
-                                                                <SelectItem value="Beige">Beige</SelectItem>
-                                                                <SelectItem value="Negro">Negro</SelectItem>
-                                                                <SelectItem value="Rojo">Rojo</SelectItem>
-                                                                <SelectItem value="Verde">Verde</SelectItem>
-                                                            </SelectContent>
-                                                        </Select>
-                                                    </div>
-                                                    <div className="grid grid-cols-4 items-center gap-4">
-                                                        <Label htmlFor="size">Talle</Label>
-                                                        <Select>
-                                                            <SelectTrigger id="size">
-                                                                <SelectValue placeholder="Talle"/>
-                                                            </SelectTrigger>
-                                                            <SelectContent>
-                                                                <SelectItem value="34">34</SelectItem>
-                                                                <SelectItem value="36">36</SelectItem>
-                                                                <SelectItem value="38">38</SelectItem>
-                                                                <SelectItem value="40">40</SelectItem>
-                                                                <SelectItem value="42">42</SelectItem>
-                                                                <SelectItem value="44">44</SelectItem>
-                                                                <SelectItem value="46">46</SelectItem>
-                                                                <SelectItem value="48">48</SelectItem>
-                                                                <SelectItem value="50">50</SelectItem>
-                                                                <SelectItem value="52">52</SelectItem>
-                                                                <SelectItem value="54">54</SelectItem>
-                                                            </SelectContent>
-                                                        </Select>
-                                                    </div>
-                                                    <div className="grid grid-cols-4 items-center gap-4">
-                                                        <Label htmlFor="quantity">Cantidad</Label>
-                                                        <Input id="quantity" type="number" className="w-full" />
-                                                    </div>
-                                                </div>
-                                                <DialogFooter>
-                                                        <Button type="submit" onClick={handleAddNewVariant}>Crear Variante</Button>
-                                                    <DialogClose asChild>
-                                                        <Button variant="outline" className="ml-2">
-                                                            Cancelar
-                                                        </Button>
-                                                    </DialogClose>
-                                                </DialogFooter>
-                                            </DialogContent>
-                                        </Dialog>
-                                    </CardFooter>
-                                </Card>
+                                {
+                                    productData && <ProductCard productData={productData} />
+                                }
+                                {
+                                    variantsData && <VariantCard variantsData={variantsData} />
+                                }
                             </div>
                             <div className="grid auto-rows-max items-start gap-4 lg:gap-8">
                                 <Card>

@@ -10,6 +10,7 @@ import {
 import "./globals.css";
 
 import { SideBar } from "@/components/sideBar";
+import { Toaster } from "@/components/ui/toaster";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -42,6 +43,7 @@ export default function RootLayout({
         <SideBar />
         <main className="md:ml-14">
           {children}
+          <Toaster />
         </main>
       </body>
     </html>
