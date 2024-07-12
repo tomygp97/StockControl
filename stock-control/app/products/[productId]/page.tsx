@@ -22,54 +22,16 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-    DialogClose,
-} from "@/components/ui/dialog";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { ChevronLeft, PlusCircle } from "lucide-react";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { ChevronLeft } from "lucide-react";
 
-import VariantTable from "../components/VariantTable";
-import { createVariant, fetchAllVariantsByProductId, fetchSingleProduct } from "@/app/api/apiService";
+import { fetchAllVariantsByProductId, fetchSingleProduct } from "@/app/api/apiService";
 
 // Types
 import { Product, Variant } from "@/types";
-import { useForm } from "react-hook-form";
 import VariantCard from "../components/VariantCard";
 import ProductCard from "../components/ProductCard";
-
-const ProductSchema = z.object({
-    name: z.string().min(1, { message: "Nombre es requerido" }),
-    category: z.string().min(1, { message: "Categoría es requerida" }),
-    description: z.string().min(1, { message: "Descripción es requerida" }),
-    price: z.number().min(1, { message: "El precio es requerido" }),
-    quantityInStock: z.number().min(1, { message: "La Cantidad en Stock es requerida" }),
-    variantsId: z.array(z.string()),
-});
-
-    //! Dentro de VariantCard
-// const VariantSchema = z.object({
-//     color: z.string().min(1, { message: "Color es requerido" }),
-//     size: z.string().min(1, { message: "Talle es requerido" }),
-//     quantity: z.number().min(0, { message: "La Cantidad es requerida" }),
-// });
 
 
 const EditProduct = () => {
@@ -115,28 +77,6 @@ const EditProduct = () => {
         console.log("Variante creada con los datos:", newVariant);
     };
 
-    const productsForm = useForm<z.infer<typeof ProductSchema>>({
-        resolver: zodResolver(ProductSchema),
-        defaultValues: {
-            name: productData.name,
-            category: productData.category,
-            description: productData.description,
-            price: productData.price,
-            quantityInStock: productData.quantityInStock,
-            variantsId: [],
-        }
-    });
-
-    //! Dentro de VariantCard
-    // const variantsForm = useForm<z.infer<typeof VariantSchema>>({
-    //     resolver: zodResolver(VariantSchema),
-    //     defaultValues: {
-    //         color: "",
-    //         size: "",
-    //         quantity: 0,
-    //     }
-    // });
-    
     return (
         <div className="flex min-h-screen w-full flex-col bg-muted/40">
             <div className=" flex flex-col sm:gap-4 sm:py-4">
@@ -201,13 +141,13 @@ const EditProduct = () => {
                                     <CardContent>
                                         <div className="grid gap-6">
                                             <div className="grid gap-3">
-                                                <Label htmlFor="status">Venta</Label>
-                                                <Input id="price" type="number" className="w-full" defaultValue={productData.price} />
+                                                <Label>Venta</Label>
+                                                <Input type="number" className="w-full" defaultValue={productData.price} />
                                             </div>
                                             <div className="grid gap-3">
                                                 {/* //TODO: Implementar costos */}
-                                                <Label htmlFor="status" className="text-muted-foreground">Compra</Label>
-                                                <Input id="cost" type="text" className="w-full" defaultValue="Proximamente..." disabled />
+                                                <Label className="text-muted-foreground">Compra</Label>
+                                                <Input type="text" className="w-full" defaultValue="Proximamente..." disabled />
                                             </div>
                                         </div>
                                     </CardContent>

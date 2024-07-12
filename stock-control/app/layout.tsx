@@ -7,19 +7,19 @@ import {
   SignedOut,
   UserButton
 } from '@clerk/nextjs';
-import "./globals.css";
-
-import { SideBar } from "@/components/sideBar";
 import { Toaster } from "@/components/ui/toaster";
+
+import "./globals.css";
+import { SideBar } from "@/components/sideBar";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Stock Control",
   description: "Stock Control App",
-  icons: {
-    icon: "./public/stockControl-logo.png",
-  }
+  // icons: {
+  //   icon: "./public/stockControl-logo.png",
+  // }
 };
 
 export default function RootLayout({

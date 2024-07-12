@@ -5,7 +5,6 @@ import {
     Table,
     TableBody,
     TableCell,
-    TableFooter,
     TableHead,
     TableHeader,
     TableRow,
@@ -29,8 +28,7 @@ interface VariantTableProps {
 }
 
 const VariantTable: React.FC<VariantTableProps> = ({variants}) => {
-    // console.log("variants dedsde VariantTable: ", variants);
-    // console.log(".length: ", variants.length);
+
     return (
         <Table>
             <TableHeader>
@@ -52,7 +50,7 @@ const VariantTable: React.FC<VariantTableProps> = ({variants}) => {
                         <TableRow key={variant._id}>
                             <TableCell className="font-semibold">
                             <Select>
-                            <SelectTrigger id="color">
+                            <SelectTrigger>
                                 <SelectValue placeholder={variant.color}/>
                             </SelectTrigger>
                             <SelectContent>
@@ -65,8 +63,8 @@ const VariantTable: React.FC<VariantTableProps> = ({variants}) => {
                         </Select>
                     </TableCell>
                     <TableCell>
-                        <Label htmlFor="stock" className="sr-only">stock</Label>
-                        <Input id="stock" type="number" placeholder={variant.quantity.toString()} />
+                        <Label className="sr-only">stock</Label>
+                        <Input type="number" placeholder={variant.quantity.toString()} />
                     </TableCell>
                     <TableCell>
                         {
@@ -80,7 +78,7 @@ const VariantTable: React.FC<VariantTableProps> = ({variants}) => {
                     </TableCell>
                     <TableCell>
                         <Select>
-                            <SelectTrigger id="size">
+                            <SelectTrigger>
                                 <SelectValue placeholder={variant.size}/>
                             </SelectTrigger>
                             <SelectContent>
