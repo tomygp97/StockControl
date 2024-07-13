@@ -2,6 +2,7 @@
 
 
 import { useState } from "react";
+import Link from "next/link";
 import {
     Card,
     CardContent,
@@ -36,7 +37,9 @@ const Sales = () => {
                                 <CardDescription className="max-w-lg text-balance leading-relaxed">Panel de ventas</CardDescription>
                             </CardHeader>
                             <CardFooter>
-                                <Button>Cargar Venta</Button>
+                                <Link href="/sales/new-sale">
+                                    <Button>Cargar Venta</Button>
+                                </Link>
                             </CardFooter>
                         </Card>
                         <Card>

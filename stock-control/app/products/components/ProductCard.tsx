@@ -19,14 +19,14 @@ interface ProductCardProps {
     productData: Product;
 }
 
-    const formSchema = z.object({
-        name:z.string().min(1, { message: "Nombre es requerido" }),
-        category:z.string().min(1, { message: "Categoría es requerida" }),
-        description:z.string().min(0).max(300, { message: "La descripción debe tener entre 5 y 300 caracteres" }),
-        price:z.number().min(1, { message: "El precio es requerido" }),
-        quantityInStock:z.number().min(0, { message: "La Cantidad en Stock es requerida" }),
-        variantsId:z.array(z.string()),
-    });
+const formSchema = z.object({
+    name:z.string().min(1, { message: "Nombre es requerido" }),
+    category:z.string().min(1, { message: "Categoría es requerida" }),
+    description:z.string().min(0).max(300, { message: "La descripción debe tener entre 5 y 300 caracteres" }),
+    price:z.number().min(1, { message: "El precio es requerido" }),
+    quantityInStock:z.number().min(0, { message: "La Cantidad en Stock es requerida" }),
+    variantsId:z.array(z.string()),
+});
 
 const ProductCard: React.FC<ProductCardProps> = ({ productData }) => {
 
@@ -47,7 +47,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ productData }) => {
             <CardHeader>
                 <CardTitle>Detalles del producto</CardTitle>
                 <CardDescription>
-                    Lipsum dolor sit amet, consectetur adipiscing elit
+                    Información del producto
                 </CardDescription>
             </CardHeader>
             <CardContent>

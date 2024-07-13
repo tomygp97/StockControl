@@ -1,3 +1,4 @@
+import Link from "next/link";
 import {
     Breadcrumb,
     BreadcrumbItem,
@@ -6,6 +7,7 @@ import {
     BreadcrumbPage,
     BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import { Button } from "@/components/ui/button";
 import {
     Card,
     CardContent,
@@ -14,14 +16,21 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { ChevronLeft } from "lucide-react";
-import Link from "next/link";
-import VariantCard from "../components/VariantCard";
-import { Label } from "@/components/ui/label";
+import {
+    Dialog,
+    DialogClose,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-
+import { ChevronLeft, PlusCircle } from "lucide-react";
+import SelectProductSold from "../components/SelectProductSold";
 
 const page = () => {
     return (
@@ -38,28 +47,28 @@ const page = () => {
                             <BreadcrumbSeparator />
                             <BreadcrumbItem>
                                 <BreadcrumbLink asChild>
-                                    <Link href="/products">Productos</Link>
+                                    <Link href="/sales">Ventas</Link>
                                 </BreadcrumbLink>
                             </BreadcrumbItem>
                             <BreadcrumbSeparator />
-                            <BreadcrumbPage>Crear Producto</BreadcrumbPage>
+                            <BreadcrumbPage>Nueva Venta</BreadcrumbPage>
                         </BreadcrumbList>
                     </Breadcrumb>
                 </header>
                 <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
                     <div className="mx-auto grid max-w-[59rem] flex-1 auto-rows-max gap-4">
                         <div className="flex items-center gap-4">
-                            <Link href="/products">
-                                    <Button variant="outline" size="icon" className="h-7 w-7">
-                                        <ChevronLeft className="h-4 w-4" />
-                                        <span className="sr-only">Volver</span>
-                                    </Button>
+                            <Link href="/sales">
+                                <Button variant="outline" size="icon" className="h-7 w-7">
+                                    <ChevronLeft className="h-4 w-4" />
+                                    <span className="sr-only">Volver</span>
+                                </Button>
                             </Link>
-                            <h1 className="flex-1 shrink-0 whitespace-nowrap text-xl font-semibold tracking-tight sm:grow-0">
-                                Crear Producto
-                            </h1>
+                            <div className="flex-1 shrink-0 whitespace-nowrap text-xl font-semibold tracking-tight sm:grow-0">
+                                Ingresar Nueva Venta
+                            </div>
                             <div className="hidden items-center gap-2 md:ml-auto md:flex">
-                                <Link href="/products">
+                                <Link href="/sales">
                                     <Button variant="outline" size="sm">
                                         Volver
                                     </Button>
@@ -70,43 +79,40 @@ const page = () => {
                         <div className="grid gap-4 lg:gap-8 md:grid-cols-[1fr_250px] lg:grid-cols-3">
                             <div className="grid auto-rows-max items-start gap-4 lg:col-span-2 lg:gap-8">
                                 <Card>
-                                    <CardHeader>
-                                        <CardTitle>Datos del Producto</CardTitle>
-                                        <CardDescription>
-                                            Ingresa los datos del nuevo Producto
-                                        </CardDescription>
-                                    </CardHeader>
-                                    <CardContent>
-                                    <div className="grid gap-6">
-                                        <div className="grid gap-3">
-                                            <Label htmlFor="name">Nombre</Label>
-                                            <Input id="name" type="text" className="w-full" placeholder="Nombre..." />
-                                        </div>
-                                        <div className="grid gap-3">
-                                            <Label htmlFor="name">Categoría</Label>
-                                            <Input id="category" type="text" className="w-full" placeholder="Categoría..." />
-                                        </div>
-                                        <div className="grid gap-3">
-                                            <Label htmlFor="description">Descripción</Label>
-                                            <Textarea id="description" className="min-h-24" placeholder="Descripción..." />
-                                        </div>
-                                    </div>
-                                    </CardContent>
+                                    <Dialog>
+                                        <CardHeader className="grid grid-cols-2">
+                                            <CardTitle>Producto</CardTitle>
+                                            <DialogTrigger asChild>                    
+                                                <Button variant="outline" size="sm" className="w-1/2 ml-auto">
+                                                    Agregar
+                                                    <PlusCircle className="ml-2 h-4 w-4"/>
+                                                </Button>
+                                            </DialogTrigger>
+                                            <DialogContent>
+                                                {/* //TODO: Dialog donde selecciono el producto vendido */}
+                                            </DialogContent>
+                                            <CardDescription>
+                                                Seleccione el producto vendido.
+                                            </CardDescription>
+                                        </CardHeader>
+                                        <CardContent>
+                                            <SelectProductSold />
+                                        </CardContent>
+                                    </Dialog>
                                 </Card>
-                                <VariantCard variantsData={[]} />
                             </div>
                             <div className="grid auto-rows-max items-start gap-4 lg:gap-8">
                                 <Card>
                                     <CardHeader>
                                         <CardTitle>
-                                            Precio
+                                            Total de la Venta
                                         </CardTitle>
                                     </CardHeader>
                                     <CardContent>
                                         <div className="grid gap-6">
                                             <div className="grid gap-3">
-                                                <Label>Venta</Label>
-                                                <Input type="number" className="w-full" defaultValue={0} />
+                                                <Label className="text-muted-foreground">Monto</Label>
+                                                <div className="text-lg font-semibold">$ 34000.00</div>
                                             </div>
                                             <div className="grid gap-3">
                                                 {/* //TODO: Implementar costos */}

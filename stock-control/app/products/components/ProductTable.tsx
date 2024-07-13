@@ -8,7 +8,13 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { Eye, Pencil, Trash } from "lucide-react";
+import {
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenu,
+    DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu";
+import { Eye, MoreVertical, Pencil, Trash } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 import { Product } from "@/types";
@@ -36,7 +42,7 @@ const ProductTable: React.FC<ProductTableProps> = ({products}) => {
                     <TableHead className="hidden md:table-cell">
                         Disponibilidad
                     </TableHead>
-                    <TableHead className="hidden md:table-cell">
+                    <TableHead className="hidden md:table-cell text-center">
                         Inventario
                     </TableHead>
                     <TableHead>
@@ -48,42 +54,50 @@ const ProductTable: React.FC<ProductTableProps> = ({products}) => {
             <TableBody>
             {
                 products.map((product) => (
-                <TableRow key={product._id}>
-
-                    <TableCell className="font-medium">
-                        { product.name }
-                    </TableCell>
-                    <TableCell className="hidden md:table-cell">
-                        { product.category }
-                    </TableCell>
-                    <TableCell className="hidden md:table-cell">
-                        ${ product.price }
-                    </TableCell>
-                    <TableCell>
-                    { 
-                        product.quantityInStock > 0 ?
-                            <Badge variant="outline">Disponible</Badge>
-                            :
-                            <Badge variant="destructive">Agotado</Badge>
-                    }
-                    </TableCell>
-                    <TableCell className="hidden md:table-cell">
-                        { product.quantityInStock }
-                    </TableCell>
-                    <TableCell className="flex justify-end">
-                        <Button variant="ghost" size="sm">
-                            <Eye />
-                        </Button>
-                        <Button variant="ghost" size="sm" onClick={() => handleNavigateToEditProduct(product._id)}>
-                            <Pencil />
-                        </Button>
-                        <Button variant="ghost" size="sm">
-                            <Trash />
-                        </Button>
-                    </TableCell>
-
-                </TableRow>
-
+                    <TableRow key={product._id}>
+                        <TableCell className="font-medium">
+                            { product.name }
+                        </TableCell>
+                        <TableCell className="hidden md:table-cell">
+                            { product.category }
+                        </TableCell>
+                        <TableCell className="hidden md:table-cell">
+                            ${ product.price }
+                        </TableCell>
+                        <TableCell>
+                        { 
+                            product.quantityInStock > 0 ?
+                                <Badge variant="outline">Disponible</Badge>
+                                :
+                                <Badge variant="destructive">Agotado</Badge>
+                        }
+                        </TableCell>
+                        <TableCell className="hidden md:table-cell text-center">
+                            { product.quantityInStock }
+                        </TableCell>
+                        <TableCell className="flex justify-end">
+                            {/* <Button variant="ghost" size="sm">
+                                <Eye />
+                            </Button> */}
+                            {/* <Button variant="ghost" size="sm" onClick={() => handleNavigateToEditProduct(product._id)}>
+                                <Pencil />
+                            </Button>
+                            <Button variant="ghost" size="sm">
+                                <Trash />
+                            </Button> */}
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button size="icon" variant="ghost" className="h-8 w-8">
+                                        <MoreVertical className="h-3.5 w-3.5" />
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                    <DropdownMenuItem onClick={() => handleNavigateToEditProduct(product._id)}>Editar</DropdownMenuItem>
+                                    <DropdownMenuItem>Borrar</DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        </TableCell>
+                    </TableRow>
                 ))
             }
             </TableBody>

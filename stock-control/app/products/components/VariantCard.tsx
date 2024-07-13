@@ -48,7 +48,7 @@ import { Variant } from "@/types";
 
 
 interface VariantCardProps {
-    variantsData: Variant[];
+    variantsData: Variant[] | undefined;
 }
 
 const formSchema = z.object({

@@ -5,6 +5,7 @@ import {
     File,
     ListFilter,
     PlusCircle,
+    Search,
 } from "lucide-react";
 import {
     Tabs,
@@ -39,7 +40,6 @@ import ProductTable from "./components/ProductTable";
 import { fetchAllProducts } from "../api/apiService";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-// import { useRouter } from "next/router";
 
 
 const ProductsPage = () => {
@@ -69,20 +69,8 @@ const ProductsPage = () => {
         setOtuOfStockProducts(productsList.filter(product => product.quantityInStock === 0));
     }, [productsList]);
 
-    // useEffect(() => {
-    //     setProductsList(products);
-    //     setAvailableProducts(products.filter((product) => product.quantityInStock > 0));
-    //     setOtuOfStockProducts(products.filter(product => product.quantityInStock === 0));
-    // }, []);
-
-    const handleNavigateToNewProduct = () => {
-        router.push("/products/new-product");
-    };
-
     return (
         <div className="flex flex-col sm:gap-4">
-            <div className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
-            </div>
             <main className="grid flex-1 items-start sm:px-6 sm:py-0 md:gap-8">
                 <Tabs defaultValue="all">
                     <div className="flex items-center">
@@ -95,10 +83,10 @@ const ProductsPage = () => {
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <Button variant="outline" size="sm" className="h-8 gap-1">
-                                <ListFilter className="h-3.5 w-3.5" />
-                                <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                                    Filtros
-                                </span>
+                                    <ListFilter className="h-3.5 w-3.5" />
+                                    <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
+                                        Filtros
+                                    </span>
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
@@ -119,12 +107,14 @@ const ProductsPage = () => {
                                 Export
                             </span>
                         </Button>
-                        <Button size="sm" className="h-8 gap-1" onClick={handleNavigateToNewProduct}>
-                            <PlusCircle className="h-3.5 w-3.5" />
-                            <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                                Nuevo Producto
-                            </span>
-                        </Button>
+                        <Link href="/products/new-product">
+                            <Button size="sm" className="h-8 gap-1">
+                                <PlusCircle className="h-3.5 w-3.5" />
+                                <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
+                                    Nuevo Producto
+                                </span>
+                            </Button>
+                        </Link>
                     </div>
                     </div>
                     <TabsContent value="all">
@@ -134,6 +124,14 @@ const ProductsPage = () => {
                                 <CardDescription>
                                     Visualiza los productos registrados.
                                 </CardDescription>
+                                {/* <div className="md:grow-0">
+                                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                                    <Input
+                                    type="search"
+                                    placeholder="Search..."
+                                    className="w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[320px]"
+                                    />
+                                </div> */}
                             </CardHeader>
                             <CardContent>
                                 <ProductTable products={productsList} />
