@@ -68,9 +68,9 @@ const VariantCard: React.FC<VariantCardProps> = ({ variantsData }) => {
         },
     })
 
-    useEffect(() => {
-        console.log("Errores del formulario:", form.formState.errors);
-    }, [form.formState.errors]);
+    // useEffect(() => {
+    //     console.log("Errores del formulario:", form.formState.errors);
+    // }, [form.formState.errors]);
 
     const onSubmit = (values: z.infer<typeof formSchema>) => {
         console.log("data: ", values);

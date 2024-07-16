@@ -1,3 +1,6 @@
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { Form } from "@/components/ui/form";
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
@@ -5,6 +8,7 @@ import {
     Card,
     CardContent,
     CardDescription,
+    CardFooter,
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
@@ -13,7 +17,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 // Types
 import { Product } from "@/types";
-import { useForm } from "react-hook-form";
 
 interface ProductCardProps {
     productData: Product;
@@ -30,7 +33,7 @@ const formSchema = z.object({
 
 const ProductCard: React.FC<ProductCardProps> = ({ productData }) => {
 
-    const productsForm = useForm<z.infer<typeof formSchema>>({
+    const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
             name: productData.name,
@@ -41,6 +44,14 @@ const ProductCard: React.FC<ProductCardProps> = ({ productData }) => {
             variantsId: [],
         }
     });
+
+    useEffect(() => {
+        console.log("Errores del formulario:", form.formState.errors);
+    }, [form.formState.errors]);
+    
+    const onSubmit = (values: z.infer<typeof formSchema>) => {
+        console.log("data: ", values);
+    }
     
     return (
         <Card>
@@ -51,20 +62,27 @@ const ProductCard: React.FC<ProductCardProps> = ({ productData }) => {
                 </CardDescription>
             </CardHeader>
             <CardContent>
-                <div className="grid gap-6">
-                    <div className="grid gap-3">
-                        <Label htmlFor="name">Nombre</Label>
-                        <Input id="name" type="text" className="w-full" defaultValue={productData.name} />
-                    </div>
-                    <div className="grid gap-3">
-                        <Label htmlFor="name">Categoría</Label>
-                        <Input id="category" type="text" className="w-full" defaultValue={productData.category} />
-                    </div>
-                    <div className="grid gap-3">
-                        <Label htmlFor="description">Descripción</Label>
-                        <Textarea id="description" className="min-h-24" defaultValue={productData.description} />
-                    </div>
-                </div>
+                <Form {...form}>
+                    <form onSubmit={form.handleSubmit(onSubmit)}>
+                        <div className="grid gap-6 mb-2">
+                            <div className="grid gap-3">
+                                <Label htmlFor="name">Nombre</Label>
+                                <Input id="name" type="text" className="w-full" defaultValue={productData.name} />
+                            </div>
+                            <div className="grid gap-3">
+                                <Label htmlFor="name">Categoría</Label>
+                                <Input id="category" type="text" className="w-full" defaultValue={productData.category} />
+                            </div>
+                            <div className="grid gap-3">
+                                <Label htmlFor="description">Descripción</Label>
+                                <Textarea id="description" className="min-h-24" defaultValue={productData.description} />
+                            </div>
+                        </div>
+                        {/* <CardFooter className="flex justify-center mt-10">
+                            <Button type="submit">Guardar</Button>
+                        </CardFooter> */}
+                    </form>
+                </Form>
             </CardContent>
         </Card>
     )

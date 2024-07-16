@@ -29,24 +29,24 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider>
-    <html lang="en">
-      <body className="">
-        <header className="layout-header">
-          <SignedOut>
-            <SignInButton />
-          </SignedOut>
-          <SignedIn>
-            <UserButton />
-          </SignedIn>
-        </header>
-        {/* <hr /> */}
-        <SideBar />
-        <main className="md:ml-14">
-          {children}
-          <Toaster />
-        </main>
-      </body>
-    </html>
-  </ClerkProvider>
+      <html lang="en">
+        <body className="">
+          <header className="layout-header">
+            <SignedOut>
+              <SignInButton />
+            </SignedOut>
+            <SignedIn>
+              <UserButton />
+            </SignedIn>
+          </header>
+          {/* <hr /> */}
+          <SideBar />
+          <main className="md:ml-14">
+            {children}
+            <Toaster />
+          </main>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }

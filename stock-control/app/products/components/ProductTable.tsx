@@ -92,7 +92,7 @@ const ProductTable: React.FC<ProductTableProps> = ({products}) => {
                                     </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end">
-                                    <DropdownMenuItem onClick={() => handleNavigateToEditProduct(product._id)}>Editar</DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => handleNavigateToEditProduct(product._id!)}>Editar</DropdownMenuItem>
                                     <DropdownMenuItem>Borrar</DropdownMenuItem>
                                 </DropdownMenuContent>
                             </DropdownMenu>

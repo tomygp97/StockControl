@@ -5,8 +5,7 @@ import { saleApi } from './saleApi';
 import { productApi } from './productApi';
 import { variantApi } from './variantApi';
 // Types
-import { Product } from '@/types';
-import { Variant } from '@/types';
+import { Product, Variant } from '@/types';
 
 //* Products
 export const fetchAllProducts = async() => {
@@ -22,6 +21,19 @@ export const fetchSingleProduct = async(productId: string) => {
     try {
         const response = await productApi.get(`/${productId}`);        
         return response.data.product
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export const createProduct = async(product: Product) => {
+    try {
+        const response = await productApi.post('/', product);
+        const newProduct = response.data.product;
+
+        if( response.status === 201 && newProduct && newProduct._id) {
+            return { product: newProduct }
+        }
     } catch (error) {
         console.log(error);
     }

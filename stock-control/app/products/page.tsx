@@ -1,6 +1,8 @@
 'use client'
 
+
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import {
     File,
     ListFilter,
@@ -38,13 +40,10 @@ import { Product } from "@/types";
 
 import ProductTable from "./components/ProductTable";
 import { fetchAllProducts } from "../api/apiService";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { ProductProvider } from "./context/ProductContext";
 
 
 const ProductsPage = () => {
-    const router = useRouter();
-
     const [productsList, setProductsList] = useState<Product[]>([]);
     const [availableProducts, setAvailableProducts] = useState<Product[]>([])
     const [outOfStockProducts, setOtuOfStockProducts] = useState<Product[]>([])
@@ -124,14 +123,6 @@ const ProductsPage = () => {
                                 <CardDescription>
                                     Visualiza los productos registrados.
                                 </CardDescription>
-                                {/* <div className="md:grow-0">
-                                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                                    <Input
-                                    type="search"
-                                    placeholder="Search..."
-                                    className="w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[320px]"
-                                    />
-                                </div> */}
                             </CardHeader>
                             <CardContent>
                                 <ProductTable products={productsList} />
