@@ -43,8 +43,8 @@ export default function RootLayout({
           <SideBar />
           <main className="md:ml-14">
             {children}
-            <Toaster />
           </main>
+          <Toaster />
         </body>
       </html>
     </ClerkProvider>

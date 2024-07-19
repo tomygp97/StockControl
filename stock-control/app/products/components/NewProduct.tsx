@@ -2,7 +2,7 @@
 
 
 import { useEffect } from "react";
-import { useForm, Controller } from "react-hook-form";
+import { Button } from "@/components/ui/button";
 import {
     Form,
     FormControl,
@@ -10,18 +10,18 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { Input } from "@/components/ui/input";
 
 
 
 const formSchema = z.object({
     name: z.string().min(1, { message: "Nombre es requerido" }),
     category: z.string().min(1, { message: "Categoría es requerida" }),
-    description: z.string().min(0).max(300, { message: "La descripción debe tener entre 5 y 300 caracteres" }),
+    description: z.string().min(0).max(300, { message: "La descripción debe tener entre 5 y 300 caracteres" }).optional(),
     // price: z.number().min(1, { message: "El precio es requerido" }),
     // quantityInStock: z.number().min(0, { message: "La Cantidad en Stock es requerida" }),
     // variantsId: z.array(z.string()),

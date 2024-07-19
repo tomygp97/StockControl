@@ -33,13 +33,15 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/use-toast";
 
+// Types
 import { Product } from "@/types";
 //! DATA DE PRUEBA
 // import products from "./data/products";
 
 import ProductTable from "./components/ProductTable";
-import { fetchAllProducts } from "../api/apiService";
+import { deleteProduct, fetchAllProducts } from "../api/apiService";
 import { ProductProvider } from "./context/ProductContext";
 
 
@@ -47,26 +49,48 @@ const ProductsPage = () => {
     const [productsList, setProductsList] = useState<Product[]>([]);
     const [availableProducts, setAvailableProducts] = useState<Product[]>([])
     const [outOfStockProducts, setOtuOfStockProducts] = useState<Product[]>([])
-    // console.log("productsList: ", productsList);
+    const [loading, setLoading] = useState(false)
+
+    const { toast } = useToast();
 
     const fetchProductsData = async() => {
         try {
+            setLoading(true);
             const productsData = await fetchAllProducts();
             setProductsList(productsData);
         } catch (error) {
             console.log(error);
+        } finally {
+            setLoading(false);
         }
     }
 
     useEffect(() => {
         fetchProductsData();
     }, [])
+
+    const handleDeleteProduct = async(id: string) => {
+        try {
+            setLoading(true);
+            await deleteProduct(id);
+            toast({
+                description: "El producto ha sido eliminado Correctamente",
+            });
+            fetchProductsData();
+        } catch (error) {
+            console.log(error);
+        } finally {
+            setLoading(false);
+        }
+    }
     
 
     useEffect(() => {
         setAvailableProducts(productsList.filter((product) => product.quantityInStock > 0));
         setOtuOfStockProducts(productsList.filter(product => product.quantityInStock === 0));
     }, [productsList]);
+
+    if (loading) return <div className="flex justify-center items-center h-96">Cargando...</div>;
 
     return (
         <div className="flex flex-col sm:gap-4">
@@ -125,7 +149,7 @@ const ProductsPage = () => {
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
-                                <ProductTable products={productsList} />
+                                <ProductTable products={productsList} handleDeleteProduct={handleDeleteProduct} />
                             </CardContent>
                             <CardFooter>
                             <div className="text-xs text-muted-foreground">
@@ -144,7 +168,7 @@ const ProductsPage = () => {
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
-                                <ProductTable products={availableProducts} />
+                                <ProductTable products={availableProducts} handleDeleteProduct={handleDeleteProduct} />
                             </CardContent>
                             <CardFooter>
                             <div className="text-xs text-muted-foreground">
@@ -163,7 +187,7 @@ const ProductsPage = () => {
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
-                                <ProductTable products={outOfStockProducts} />
+                                <ProductTable products={outOfStockProducts} handleDeleteProduct={handleDeleteProduct} />
                             </CardContent>
                             <CardFooter>
                             <div className="text-xs text-muted-foreground">

@@ -1,11 +1,11 @@
 const mongoose = require('mongoose');
 
 export interface Variant {
-    _id: string;
+    _id?: string;
     color: string;
     size: string;
     quantity: number;
-    availability: string;
+    availability?: string;
 }
 
 // export interface Product {

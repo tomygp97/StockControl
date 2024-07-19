@@ -31,6 +31,9 @@ const formSchema = z.object({
     variantsId:z.array(z.string()),
 });
 
+//! NO ESTA EN USO
+//TODO: Pasar prop onSubmit y utilizar la card
+//* Por el momento todo esta en [productId]
 const ProductCard: React.FC<ProductCardProps> = ({ productData }) => {
 
     const form = useForm<z.infer<typeof formSchema>>({
@@ -62,8 +65,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ productData }) => {
                 </CardDescription>
             </CardHeader>
             <CardContent>
-                <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)}>
+                {/* <Form {...form}>
+                    <form onSubmit={form.handleSubmit(onSubmit)}> */}
                         <div className="grid gap-6 mb-2">
                             <div className="grid gap-3">
                                 <Label htmlFor="name">Nombre</Label>
@@ -81,8 +84,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ productData }) => {
                         {/* <CardFooter className="flex justify-center mt-10">
                             <Button type="submit">Guardar</Button>
                         </CardFooter> */}
-                    </form>
-                </Form>
+                    {/* </form>
+                </Form> */}
             </CardContent>
         </Card>
     )

@@ -1,5 +1,22 @@
+import { useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+    Dialog,
+    DialogClose,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenu,
+    DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu";
 import {
     Table,
     TableBody,
@@ -8,22 +25,17 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import {
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenu,
-    DropdownMenuTrigger
-} from "@/components/ui/dropdown-menu";
-import { Eye, MoreVertical, Pencil, Trash } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { MoreVertical } from "lucide-react";
 
+// Types
 import { Product } from "@/types";
 
 interface ProductTableProps {
     products: Product[];
+    handleDeleteProduct: (id: string) => void;
 }
 
-const ProductTable: React.FC<ProductTableProps> = ({products}) => {
+const ProductTable: React.FC<ProductTableProps> = ({products, handleDeleteProduct}) => {
     const router = useRouter();
 
     const handleNavigateToEditProduct = (id: string) => {
@@ -76,15 +88,41 @@ const ProductTable: React.FC<ProductTableProps> = ({products}) => {
                             { product.quantityInStock }
                         </TableCell>
                         <TableCell className="flex justify-end">
-                            {/* <Button variant="ghost" size="sm">
-                                <Eye />
-                            </Button> */}
-                            {/* <Button variant="ghost" size="sm" onClick={() => handleNavigateToEditProduct(product._id)}>
-                                <Pencil />
-                            </Button>
-                            <Button variant="ghost" size="sm">
-                                <Trash />
-                            </Button> */}
+                            {/* <Dialog>
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                        <Button size="icon" variant="ghost" className="h-8 w-8">
+                                            <MoreVertical className="h-3.5 w-3.5" />
+                                        </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent align="end">
+                                        <DropdownMenuItem onClick={() => handleNavigateToEditProduct(product._id!)}>Editar</DropdownMenuItem>
+                                        <DialogTrigger asChild>
+                                            <DropdownMenuItem onClick={() => handleConfirmDelete(product._id!)}>Borrar</DropdownMenuItem>
+                                        </DialogTrigger>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
+                                <DialogContent>
+                                    <DialogHeader>
+                                        <DialogTitle>Estas seguro de eliminar este producto?</DialogTitle>
+                                        <DialogDescription>
+                                            Esta acción no se puede deshacer.
+                                        </DialogDescription>
+                                    </DialogHeader>
+                                    <DialogFooter>
+                                        <DialogClose asChild>
+                                            <Button type="button" variant="outline" className="ml-2">
+                                                Cancelar
+                                            </Button>
+                                        </DialogClose>
+                                        <DialogClose asChild>
+                                            <Button variant="destructive" size="sm" onClick={handleDelete}>
+                                                Eliminar
+                                            </Button>
+                                        </DialogClose>
+                                    </DialogFooter>
+                                </DialogContent>
+                            </Dialog> */}
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
                                     <Button size="icon" variant="ghost" className="h-8 w-8">
@@ -93,7 +131,7 @@ const ProductTable: React.FC<ProductTableProps> = ({products}) => {
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end">
                                     <DropdownMenuItem onClick={() => handleNavigateToEditProduct(product._id!)}>Editar</DropdownMenuItem>
-                                    <DropdownMenuItem>Borrar</DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => handleDeleteProduct(product._id!)}>Borrar</DropdownMenuItem>
                                 </DropdownMenuContent>
                             </DropdownMenu>
                         </TableCell>
