@@ -94,19 +94,16 @@ const EditProduct = () => {
         }
     });
 
-    const fetchProductData = async() => {
-        try {
-            const productData = await fetchSingleProduct(productId);
-            setProductData(productData);
-        } catch (error) {
-            console.log(error);
-        }
-    };
-
     useEffect(() => {
-        if (productId) {
-            fetchProductData();
+        const fetchProductData = async() => {
+            try {
+                const productData = await fetchSingleProduct(productId);
+                setProductData(productData);
+            } catch (error) {
+                console.log(error);
+            }
         }
+        fetchProductData();
     }, [productId]);
 
     useEffect(() => {
@@ -349,19 +346,19 @@ const EditProduct = () => {
                                                 <div className="text-xs text-muted-foreground">+35% de ganancia</div>
                                             </CardFooter>
                                         </Card>
-                                        <Card className="overflow-hidden">
-                                            <CardHeader>
-                                                <CardTitle>Detalles Adicionales</CardTitle>
-                                                <CardDescription>
-                                                    informacion adicional sobre el producto
-                                                </CardDescription>
-                                            </CardHeader>
-                                            <CardContent>
-                                                <div className="grid gap-6">Proximamente...</div>
-                                            </CardContent>
-                                        </Card>
                                     </form>
                                 </Form>
+                                <Card className="overflow-hidden">
+                                    <CardHeader>
+                                        <CardTitle>Detalles Adicionales</CardTitle>
+                                        <CardDescription>
+                                            informacion adicional sobre el producto
+                                        </CardDescription>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <div className="grid gap-6">Proximamente...</div>
+                                    </CardContent>
+                                </Card>
                             </div>
                         </div>
                     </div>

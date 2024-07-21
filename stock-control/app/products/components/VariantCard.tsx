@@ -67,14 +67,14 @@ const VariantCard: React.FC<VariantCardProps> = ({ onSubmit }) => {
     const productId = pathName.split("/products/").join("");
 
 
-    const fetchVariantData = async() => {
-        try {
-            const variantData = await fetchAllVariantsByProductId(productId);
-            setVariantsData(variantData);
-        } catch (error) {
-            console.log(error);
-        }
-    };
+    // const fetchVariantData = async() => {
+    //     try {
+    //         const variantData = await fetchAllVariantsByProductId(productId);
+    //         setVariantsData(variantData);
+    //     } catch (error) {
+    //         console.log(error);
+    //     }
+    // };
 
     const form = useForm<z.infer<typeof variantSchema>>({
         resolver: zodResolver(variantSchema),
@@ -96,8 +96,21 @@ const VariantCard: React.FC<VariantCardProps> = ({ onSubmit }) => {
     };
 
     useEffect(() => {
+        const fetchVariantData = async () => {
+            try {
+                const variantData = await fetchAllVariantsByProductId(productId);
+                setVariantsData(variantData);
+            } catch (error) {
+                console.log(error);
+            }
+        };
+
         fetchVariantData();
     }, [productId]);
+
+    // useEffect(() => {
+    //     fetchVariantData();
+    // }, [productId]);
 
     return (
         <Form {...form}>
