@@ -65,6 +65,13 @@ const ProductTable: React.FC<ProductTableProps> = ({products, handleDeleteProduc
 
             <TableBody>
             {
+                products.length === 0 ? (
+                    <TableRow>
+                        <TableCell colSpan={5} className="h-24 text-center">
+                            No hay productos
+                        </TableCell>
+                    </TableRow>
+                ) :
                 products.map((product) => (
                     <TableRow key={product._id}>
                         <TableCell className="font-medium">
@@ -88,41 +95,6 @@ const ProductTable: React.FC<ProductTableProps> = ({products, handleDeleteProduc
                             { product.quantityInStock }
                         </TableCell>
                         <TableCell className="flex justify-end">
-                            {/* <Dialog>
-                                <DropdownMenu>
-                                    <DropdownMenuTrigger asChild>
-                                        <Button size="icon" variant="ghost" className="h-8 w-8">
-                                            <MoreVertical className="h-3.5 w-3.5" />
-                                        </Button>
-                                    </DropdownMenuTrigger>
-                                    <DropdownMenuContent align="end">
-                                        <DropdownMenuItem onClick={() => handleNavigateToEditProduct(product._id!)}>Editar</DropdownMenuItem>
-                                        <DialogTrigger asChild>
-                                            <DropdownMenuItem onClick={() => handleConfirmDelete(product._id!)}>Borrar</DropdownMenuItem>
-                                        </DialogTrigger>
-                                    </DropdownMenuContent>
-                                </DropdownMenu>
-                                <DialogContent>
-                                    <DialogHeader>
-                                        <DialogTitle>Estas seguro de eliminar este producto?</DialogTitle>
-                                        <DialogDescription>
-                                            Esta acción no se puede deshacer.
-                                        </DialogDescription>
-                                    </DialogHeader>
-                                    <DialogFooter>
-                                        <DialogClose asChild>
-                                            <Button type="button" variant="outline" className="ml-2">
-                                                Cancelar
-                                            </Button>
-                                        </DialogClose>
-                                        <DialogClose asChild>
-                                            <Button variant="destructive" size="sm" onClick={handleDelete}>
-                                                Eliminar
-                                            </Button>
-                                        </DialogClose>
-                                    </DialogFooter>
-                                </DialogContent>
-                            </Dialog> */}
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
                                     <Button size="icon" variant="ghost" className="h-8 w-8">

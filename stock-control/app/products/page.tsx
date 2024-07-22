@@ -37,12 +37,10 @@ import { useToast } from "@/components/ui/use-toast";
 
 // Types
 import { Product } from "@/types";
-//! DATA DE PRUEBA
-// import products from "./data/products";
 
 import ProductTable from "./components/ProductTable";
 import { deleteProduct, fetchAllProducts } from "../api/apiService";
-import { ProductProvider } from "./context/ProductContext";
+import { Input } from "@/components/ui/input";
 
 
 const ProductsPage = () => {
@@ -50,6 +48,9 @@ const ProductsPage = () => {
     const [availableProducts, setAvailableProducts] = useState<Product[]>([])
     const [outOfStockProducts, setOtuOfStockProducts] = useState<Product[]>([])
     const [loading, setLoading] = useState(false)
+    const [filteredProducts, setFilteredProducts] = useState<Product[]>([])
+    const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
+    const [search, setSearch] = useState("")
 
     const { toast } = useToast();
 
@@ -82,13 +83,43 @@ const ProductsPage = () => {
         } finally {
             setLoading(false);
         }
-    }
-    
+    }    
 
     useEffect(() => {
         setAvailableProducts(productsList.filter((product) => product.quantityInStock > 0));
         setOtuOfStockProducts(productsList.filter(product => product.quantityInStock === 0));
+        setFilteredProducts(productsList);
     }, [productsList]);
+
+    // useEffect(() => {
+    //     if (selectedCategory) {
+    //         setFilteredProducts(productsList.filter(product => product.category === selectedCategory));
+    //     } else {
+    //         setFilteredProducts(productsList);
+    //     }
+    // }, [selectedCategory, productsList]);
+    useEffect(() => {
+        let filtered = productsList;
+
+        if (selectedCategory) {
+            filtered = filtered.filter(product => product.category === selectedCategory);
+        }
+
+        if (search) {
+            const searchRegex = new RegExp(search, "i");
+            filtered = filtered.filter(product => searchRegex.test(product.name));
+        }
+
+        setFilteredProducts(filtered);
+    }, [selectedCategory, search, productsList]);
+
+    const handleCategoryFilter = (category: string | null) => {
+        setSelectedCategory(category);
+    }
+
+    const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setSearch(event.target.value);
+    }
 
     if (loading) return <div className="flex justify-center items-center h-96">Cargando...</div>;
 
@@ -113,15 +144,15 @@ const ProductsPage = () => {
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
-                                <DropdownMenuLabel>Filtrar por</DropdownMenuLabel>
+                                <DropdownMenuLabel>Filtrar por categoría</DropdownMenuLabel>
                                 <DropdownMenuSeparator />
-                                <DropdownMenuCheckboxItem checked>
-                                    Categoria
+                                <DropdownMenuCheckboxItem checked={selectedCategory === null} onSelect={() => handleCategoryFilter(null)}>
+                                    Todo
                                 </DropdownMenuCheckboxItem>
-                                <DropdownMenuCheckboxItem>Disponibilidad</DropdownMenuCheckboxItem>
-                                <DropdownMenuCheckboxItem>
-                                    Archived
-                                </DropdownMenuCheckboxItem>
+                                <DropdownMenuCheckboxItem checked={selectedCategory === "Camisas"} onSelect={() => handleCategoryFilter("Camisas")}>Camisas</DropdownMenuCheckboxItem>
+                                <DropdownMenuCheckboxItem checked={selectedCategory === "Camperas"} onSelect={() => handleCategoryFilter("Camperas")}>Camperas</DropdownMenuCheckboxItem>
+                                <DropdownMenuCheckboxItem checked={selectedCategory === "Pantalones"} onSelect={() => handleCategoryFilter("Pantalones")}>Pantalones</DropdownMenuCheckboxItem>
+                                <DropdownMenuCheckboxItem>Otros</DropdownMenuCheckboxItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
                         <Button size="sm" variant="outline" className="h-8 gap-1">
@@ -141,20 +172,33 @@ const ProductsPage = () => {
                     </div>
                     </div>
                     <TabsContent value="all">
-                        <Card x-chunk="dashboard-06-chunk-0">
-                            <CardHeader>
-                                <CardTitle>Productos</CardTitle>
-                                <CardDescription>
-                                    Visualiza los productos registrados.
-                                </CardDescription>
+                        <Card>
+                            <CardHeader className="grid grid-cols-2">
+                                <div>
+                                    <CardTitle>Productos</CardTitle>
+                                    <CardDescription>
+                                        Visualiza los productos registrados.
+                                    </CardDescription>
+                                </div>
+                                <div className="ml-auto flex-1 md:grow-0">
+                                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                                    <Input
+                                        type="search"
+                                        placeholder="Buscar..."
+                                        className="w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[336px]"
+                                        value={search}
+                                        onChange={handleSearchChange}
+                                    />
+                                </div>
                             </CardHeader>
                             <CardContent>
-                                <ProductTable products={productsList} handleDeleteProduct={handleDeleteProduct} />
+                                {/* <ProductTable products={productsList} handleDeleteProduct={handleDeleteProduct} /> */}
+                                <ProductTable products={filteredProducts} handleDeleteProduct={handleDeleteProduct} />
                             </CardContent>
                             <CardFooter>
                             <div className="text-xs text-muted-foreground">
-                                Mostrando <strong>{`${productsList.length}`}</strong>{" "}
-                                producto{productsList.length > 1 ? "s" : ""}
+                                Mostrando <strong>{`${filteredProducts.length}`}</strong>{" "}
+                                producto{filteredProducts.length > 1 ? "s" : ""}
                             </div>
                             </CardFooter>
                         </Card>
@@ -168,7 +212,19 @@ const ProductsPage = () => {
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
-                                <ProductTable products={availableProducts} handleDeleteProduct={handleDeleteProduct} />
+                                {selectedCategory === "Camisas" ? (
+                                    <ProductTable products={availableProducts.filter(product => product.category === "Camisas")} handleDeleteProduct={handleDeleteProduct} />
+                                ) :
+                                selectedCategory === "Camperas" ? (
+                                    <ProductTable products={availableProducts.filter(product => product.category === "Camperas")} handleDeleteProduct={handleDeleteProduct} />
+                                ) :
+                                selectedCategory === "Pantalones" ? (
+                                    <ProductTable products={availableProducts.filter(product => product.category === "Pantalones")} handleDeleteProduct={handleDeleteProduct} />
+                                ) :
+                                (
+                                    <ProductTable products={availableProducts} handleDeleteProduct={handleDeleteProduct} />
+                                )}
+                                {/* <ProductTable products={availableProducts} handleDeleteProduct={handleDeleteProduct} /> */}
                             </CardContent>
                             <CardFooter>
                             <div className="text-xs text-muted-foreground">
@@ -187,7 +243,19 @@ const ProductsPage = () => {
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
-                                <ProductTable products={outOfStockProducts} handleDeleteProduct={handleDeleteProduct} />
+                                {selectedCategory === "Camisas" ? (
+                                    <ProductTable products={outOfStockProducts.filter(product => product.category === "Camisas")} handleDeleteProduct={handleDeleteProduct} />
+                                ) :
+                                selectedCategory === "Camperas" ? (
+                                    <ProductTable products={outOfStockProducts.filter(product => product.category === "Camperas")} handleDeleteProduct={handleDeleteProduct} />
+                                ) :
+                                selectedCategory === "Pantalones" ? (
+                                    <ProductTable products={outOfStockProducts.filter(product => product.category === "Pantalones")} handleDeleteProduct={handleDeleteProduct} />
+                                ) :
+                                (
+                                    <ProductTable products={outOfStockProducts} handleDeleteProduct={handleDeleteProduct} />
+                                )}
+                                {/* <ProductTable products={outOfStockProducts} handleDeleteProduct={handleDeleteProduct} /> */}
                             </CardContent>
                             <CardFooter>
                             <div className="text-xs text-muted-foreground">

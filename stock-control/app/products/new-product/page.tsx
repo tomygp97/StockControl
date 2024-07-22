@@ -78,6 +78,7 @@ const Page: React.FC = () => {
     }, [form.formState.errors]);
 
     const onSubmit = async(values: z.infer<typeof formSchema>) => {
+        console.log(values)
         const newProduct: Product = {
             name: values.name,
             category: values.category,
@@ -161,9 +162,13 @@ const Page: React.FC = () => {
                                         Volver
                                     </Button>
                                 </Link>
-                                <Button type="submit" size="sm">
-                                    Guardar
-                                </Button>
+                                <Form {...form}>
+                                    <form onSubmit={form.handleSubmit(onSubmit)}>
+                                        <Button type="submit" size="sm">
+                                            Guardar
+                                        </Button>
+                                    </form>
+                                </Form>
                             </div>
                         </div>
                         <div className="grid gap-4 lg:gap-8 md:grid-cols-[1fr_250px] lg:grid-cols-3">
@@ -244,14 +249,14 @@ const Page: React.FC = () => {
                                                 </div>
                                             </CardContent>
                                         </Card>
-                                        </form>
-                                        </Form>
-                                            {/* Card Variantes del nuevo Producto */}
-                                        {/* <VariantCard variantsData={[]} /> */}
-                                        {/* <VariantCard onSubmit={handleVariantSubmit} /> */}
-                                    </div>
-                                    <div className="grid auto-rows-max items-start gap-4 lg:gap-8">
-                                    <Form {...form}>
+                                    </form>
+                                </Form>
+                            </div>
+                                {/* Card Variantes del nuevo Producto */}
+                            {/* <VariantCard variantsData={[]} /> */}
+                            {/* <VariantCard onSubmit={handleVariantSubmit} /> */}
+                            <div className="grid auto-rows-max items-start gap-4 lg:gap-8">
+                                <Form {...form}>
                                     <form onSubmit={form.handleSubmit(onSubmit)}>
                                         {/* Card Precio y costos del nuevo Producto */}
                                         {/* <NewProductPrice /> */}
@@ -293,19 +298,19 @@ const Page: React.FC = () => {
                                                 <div className="text-xs text-muted-foreground">+35% de ganancia</div>
                                             </CardFooter>
                                         </Card>
-                                        <Card className="overflow-hidden">
-                                            <CardHeader>
-                                                <CardTitle>Detalles Adicionales</CardTitle>
-                                                <CardDescription>
-                                                    informacion adicional sobre el producto
-                                                </CardDescription>
-                                            </CardHeader>
-                                            <CardContent>
-                                                <Input type="text" className="w-full" defaultValue="Proximamente..." disabled />
-                                            </CardContent>
-                                        </Card>
                                     </form>
                                 </Form>
+                                <Card className="overflow-hidden">
+                                    <CardHeader>
+                                        <CardTitle>Detalles Adicionales</CardTitle>
+                                        <CardDescription>
+                                            informacion adicional sobre el producto
+                                        </CardDescription>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <Input type="text" className="w-full" defaultValue="Proximamente..." disabled />
+                                    </CardContent>
+                                </Card>
                             </div>
                         </div>
                     </div>

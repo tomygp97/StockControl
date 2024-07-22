@@ -1,13 +1,6 @@
 'use client'
 
 
-import { useState } from "react";
-import {
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenu,
-    DropdownMenuTrigger
-} from "@/components/ui/dropdown-menu";
 import {
     Table,
     TableBody,
@@ -16,15 +9,6 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
@@ -43,22 +27,17 @@ const VariantTable: React.FC<VariantTableProps> = ({variants}) => {
 
     const pathName = usePathname();
     const productId = pathName.split("/products/").join("");
-    const [loading, setLoading] = useState(false)
 
     const { toast } = useToast();
 
     const handleDeleteVariant = async(variantId: string) => {
         try {
-            setLoading(true);
             await deleteVariant(productId, variantId);
             toast({
-                description: "El producto ha sido eliminado Correctamente",
+                description: "La variante ha sido eliminada Correctamente",
             });
-            console.log("Variante eliminada: ", variantId);
         } catch (error) {
             console.log("Error al eliminar variante: ", error);
-        } finally {
-            setLoading(false);
         }
     }
 
@@ -67,9 +46,9 @@ const VariantTable: React.FC<VariantTableProps> = ({variants}) => {
             <TableHeader>
                 <TableRow>
                     <TableHead className="w-[100px]">Color</TableHead>
-                    <TableHead>Stock</TableHead>
-                    <TableHead>Disponibilidad</TableHead>
-                    <TableHead className="w-[100px]">Talles</TableHead>
+                    <TableHead className="text-center">Stock</TableHead>
+                    <TableHead className="w-[200px] text-center">Disponibilidad</TableHead>
+                    <TableHead className="text-center">Talles</TableHead>
                     <TableHead className="sr-only">Acciones</TableHead>
                 </TableRow>
             </TableHeader>
@@ -83,22 +62,10 @@ const VariantTable: React.FC<VariantTableProps> = ({variants}) => {
                     variants.map((variant) => (
                         <TableRow key={variant._id}>
                             <TableCell className="font-semibold">
-                                <Select>
-                                <SelectTrigger>
-                                    <SelectValue placeholder={variant.color}/>
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="Azul">Azul</SelectItem>
-                                    <SelectItem value="Beige">Beige</SelectItem>
-                                    <SelectItem value="Negro">Negro</SelectItem>
-                                    <SelectItem value="Rojo">Rojo</SelectItem>
-                                    <SelectItem value="Verde">Verde</SelectItem>
-                                </SelectContent>
-                            </Select>
+                                {variant.color}
                             </TableCell>
-                            <TableCell>
-                                <Label className="sr-only">stock</Label>
-                                <Input type="number" placeholder={variant.quantity.toString()} />
+                            <TableCell className="text-center">
+                                {variant.quantity}
                             </TableCell>
                             <TableCell className="text-center">
                                 {
@@ -110,25 +77,8 @@ const VariantTable: React.FC<VariantTableProps> = ({variants}) => {
                                 }
                                 
                             </TableCell>
-                            <TableCell>
-                                <Select>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder={variant.size}/>
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="34">34</SelectItem>
-                                        <SelectItem value="36">36</SelectItem>
-                                        <SelectItem value="38">38</SelectItem>
-                                        <SelectItem value="40">40</SelectItem>
-                                        <SelectItem value="42">42</SelectItem>
-                                        <SelectItem value="44">44</SelectItem>
-                                        <SelectItem value="46">46</SelectItem>
-                                        <SelectItem value="48">48</SelectItem>
-                                        <SelectItem value="50">50</SelectItem>
-                                        <SelectItem value="52">52</SelectItem>
-                                        <SelectItem value="54">54</SelectItem>
-                                    </SelectContent>
-                                </Select>
+                            <TableCell className="text-center">
+                                {variant.size}
                             </TableCell>
                             <TableCell className="flex justify-end">
                                 {/* Opcion 1 DropdownMenu */}

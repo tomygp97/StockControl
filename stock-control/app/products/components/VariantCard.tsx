@@ -66,16 +66,6 @@ const VariantCard: React.FC<VariantCardProps> = ({ onSubmit }) => {
     const pathName = usePathname();
     const productId = pathName.split("/products/").join("");
 
-
-    // const fetchVariantData = async() => {
-    //     try {
-    //         const variantData = await fetchAllVariantsByProductId(productId);
-    //         setVariantsData(variantData);
-    //     } catch (error) {
-    //         console.log(error);
-    //     }
-    // };
-
     const form = useForm<z.infer<typeof variantSchema>>({
         resolver: zodResolver(variantSchema),
         defaultValues: {
@@ -108,37 +98,37 @@ const VariantCard: React.FC<VariantCardProps> = ({ onSubmit }) => {
         fetchVariantData();
     }, [productId]);
 
-    // useEffect(() => {
-    //     fetchVariantData();
-    // }, [productId]);
-
     return (
-        <Form {...form}>
-            <form onSubmit={form.handleSubmit(handleFormSubmit)}>
-                <Dialog>
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Variantes</CardTitle>
-                            <CardDescription>Detalles de las variantes</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            {variantsData && <VariantTable variants={variantsData} />}
-                        </CardContent>
-                        <CardFooter className="justify-center border-t p-4">
-                            <DialogTrigger asChild>
-                                <Button variant="outline">
-                                    Añadir Variante
-                                    <PlusCircle className="ml-2 h-4 w-4" />
-                                </Button>
-                            </DialogTrigger>
-                            <DialogContent>
-                                <DialogHeader>
-                                    <DialogTitle>Crear Nueva Variante</DialogTitle>
-                                    <DialogDescription>
-                                        Ingresar los valores para la nueva variante.
-                                    </DialogDescription>
-                                </DialogHeader>
-                                <div className="grid gap-4 py-4">
+        <Dialog>
+            <Card>
+                <CardHeader>
+                    <CardTitle>Variantes</CardTitle>
+                    <CardDescription>Detalles de las variantes</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    {variantsData && <VariantTable variants={variantsData} />}
+                </CardContent>
+                <CardFooter className="justify-center border-t p-4">
+                    <Form {...form}>
+                        <form onSubmit={form.handleSubmit(handleFormSubmit)}>
+                        <DialogTrigger asChild>
+                            <Button variant="outline">
+                                Añadir Variante
+                                <PlusCircle className="ml-2 h-4 w-4" />
+                            </Button>
+                        </DialogTrigger>
+                        </form>
+                    </Form>
+                    <DialogContent>
+                        <DialogHeader>
+                            <DialogTitle>Crear Nueva Variante</DialogTitle>
+                            <DialogDescription>
+                                Ingresar los valores para la nueva variante.
+                            </DialogDescription>
+                        </DialogHeader>
+                        <div className="grid gap-4 py-4">
+                            <Form {...form}>
+                                <form onSubmit={form.handleSubmit(handleFormSubmit)}>
                                     <div className="grid grid-cols-4 items-center gap-4">
                                         <FormItem>
                                             <FormLabel>Color</FormLabel>
@@ -214,24 +204,24 @@ const VariantCard: React.FC<VariantCardProps> = ({ onSubmit }) => {
                                             <FormMessage />
                                         </FormItem>
                                     </div>
-                                    <DialogFooter>
-                                        <DialogClose asChild>
-                                            {/* <Button onClick={(variantData) => handleFormSubmit(variantData)}>Crear Variante</Button> */}
-                                            <Button onClick={() => handleFormSubmit({ color: form.getValues().color, size: form.getValues().size, quantity: form.getValues().quantity })}>Crear Variante</Button>
-                                        </DialogClose>
-                                        <DialogClose asChild>
-                                            <Button variant="outline" className="ml-2">
-                                                Cancelar
-                                            </Button>
-                                        </DialogClose>
-                                    </DialogFooter>
-                                </div>
-                            </DialogContent>
-                        </CardFooter>
-                    </Card>
-                </Dialog>
-            </form>
-        </Form>
+                                </form>
+                            </Form>
+                            <DialogFooter>
+                                <DialogClose asChild>
+                                    {/* <Button onClick={(variantData) => handleFormSubmit(variantData)}>Crear Variante</Button> */}
+                                    <Button onClick={() => handleFormSubmit({ color: form.getValues().color, size: form.getValues().size, quantity: form.getValues().quantity })}>Crear Variante</Button>
+                                </DialogClose>
+                                <DialogClose asChild>
+                                    <Button variant="outline" className="ml-2">
+                                        Cancelar
+                                    </Button>
+                                </DialogClose>
+                            </DialogFooter>
+                        </div>
+                    </DialogContent>
+                </CardFooter>
+            </Card>
+        </Dialog>
     )
 }
 

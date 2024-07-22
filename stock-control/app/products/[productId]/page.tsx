@@ -118,15 +118,32 @@ const EditProduct = () => {
     }, [productData, form]);
 
     const onSubmit = async(values: z.infer<typeof formSchema>) => {
+        const updatedProduct: Product = {
+            name: values.name,
+            category: values.category || "",
+            // description: values.description,
+            price: values.price,
+            quantityInStock: 0,
+            variants: [],
+            // variants: productData.variants || [],
+            createdAt: productData.createdAt,
+            updatedAt: new Date(),
+        };
+
+        if (values.description) {
+            updatedProduct.description = values.description
+        };
+
         try {
-            const updatedProduct = await updateProduct(productId, values);
-            if (updatedProduct && updatedProduct.product && updatedProduct.product._id) {
+            const updatedProductResponse = await updateProduct(productId, updatedProduct);
+            if (updatedProductResponse && updatedProductResponse.product && updatedProductResponse.product._id) {
                 toast({
                     title: "Producto editado correctamente",
                 })
                 router.push("/products");
+                console.log("Producto editado y redirigido a /products", updatedProductResponse);
             } else {
-                console.log("Error al editar el producto:", updatedProduct);
+                console.log("Error al editar el producto:", updatedProductResponse);
             }
             
         } catch (error) {
@@ -184,35 +201,35 @@ const EditProduct = () => {
                                         <Badge variant="destructive" className="ml-auto sm:ml-0">Agotado</Badge>
                                 }
                             <div className="hidden items-center gap-2 md:ml-auto md:flex">
-                                <Form {...form}>
-                                    <form onSubmit={form.handleSubmit(onSubmit)}>
-                                        <Dialog>
-                                            <DialogTrigger asChild>
-                                                <Button variant="outline" size="sm">
+                                <Dialog>
+                                    <DialogTrigger asChild>
+                                        <Button variant="outline" size="sm">
+                                            Eliminar
+                                        </Button>
+                                    </DialogTrigger>
+                                    <DialogContent>
+                                        <DialogHeader>
+                                            <DialogTitle>Estas seguro de eliminar este producto?</DialogTitle>
+                                            <DialogDescription>
+                                                Esta acción no se puede deshacer.
+                                            </DialogDescription>
+                                        </DialogHeader>
+                                        <DialogFooter>
+                                            <DialogClose asChild>
+                                                <Button type="button" variant="outline" className="ml-2">
+                                                    Cancelar
+                                                </Button>
+                                            </DialogClose>
+                                            <DialogClose asChild>
+                                                <Button variant="destructive" size="sm">
                                                     Eliminar
                                                 </Button>
-                                            </DialogTrigger>
-                                            <DialogContent>
-                                                <DialogHeader>
-                                                    <DialogTitle>Estas seguro de eliminar este producto?</DialogTitle>
-                                                    <DialogDescription>
-                                                        Esta acción no se puede deshacer.
-                                                    </DialogDescription>
-                                                </DialogHeader>
-                                                <DialogFooter>
-                                                    <DialogClose asChild>
-                                                        <Button type="button" variant="outline" className="ml-2">
-                                                            Cancelar
-                                                        </Button>
-                                                    </DialogClose>
-                                                    <DialogClose asChild>
-                                                        <Button variant="destructive" size="sm">
-                                                            Eliminar
-                                                        </Button>
-                                                    </DialogClose>
-                                                </DialogFooter>
-                                            </DialogContent>
-                                        </Dialog>
+                                            </DialogClose>
+                                        </DialogFooter>
+                                    </DialogContent>
+                                </Dialog>
+                                <Form {...form}>
+                                    <form onSubmit={form.handleSubmit(onSubmit)}>
                                         <Button size="sm" type="submit">Guardar</Button>
                                     </form>
                                 </Form>
