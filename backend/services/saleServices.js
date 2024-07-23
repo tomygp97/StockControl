@@ -29,7 +29,7 @@ const saleService = {
             for (const productSold of productsSold) {
                 const { product, variant, quantitySold } = productSold;
 
-                const productData = await Product.findById(product);
+                const productData = await Product.findById(product).session(session);
 
                 const totalPrice = productData.price * quantitySold;
 

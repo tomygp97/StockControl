@@ -91,13 +91,6 @@ const ProductsPage = () => {
         setFilteredProducts(productsList);
     }, [productsList]);
 
-    // useEffect(() => {
-    //     if (selectedCategory) {
-    //         setFilteredProducts(productsList.filter(product => product.category === selectedCategory));
-    //     } else {
-    //         setFilteredProducts(productsList);
-    //     }
-    // }, [selectedCategory, productsList]);
     useEffect(() => {
         let filtered = productsList;
 
