@@ -8,16 +8,18 @@ const {
     getProductById,
     createProduct,
     updateProduct,
-    deleteProduct
+    deleteProduct,
+    createProductWithVariants,
 } = require('../controllers/productController');
 
-const { validateProduct, validateProductUpdate, validateProductIdParam, } = require('../middleware/validationMiddleware');
+const { validateProduct, validateProductUpdate, validateProductIdParam, validateVariant, } = require('../middleware/validationMiddleware');
 
 router.use('/:id/variants', variantRouter);
 
 router.route('/')
     .get(getAllProducts)
-    .post(validateProduct, createProduct);
+    // .post(validateProduct, createProduct);
+    .post(validateProduct, createProductWithVariants);
     
 router.route('/:id')
     .get(validateProductIdParam, getProductById)

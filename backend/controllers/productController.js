@@ -1,5 +1,6 @@
 const Product = require('../models/productModel');
 const { StatusCodes } = require('http-status-codes');
+const Variant = require('../models/variantModel');
 
 const getAllProducts = async (req, res) => {
     try {
@@ -36,7 +37,48 @@ const createProduct = async (req, res) => {
     }
 };
 
-const updateProduct = async(req, res) => {
+const createProductWithVariants = async (req, res) => {
+    try {
+        const { name, price, category, description, variants } = req.body;
+
+        const newProduct = new Product({
+            name,
+            price,
+            category,
+            description,
+            quantityInStock: 0,
+        });
+
+        await newProduct.save();
+
+        // Crea las variantes
+        if (variants && variants.length > 0) {
+            let totalQuantity = 0;
+            const variantsIds = [];
+            for (const variant of variants) {
+                const newVariant = new Variant({ ...variant });
+                if (newVariant.quantity && newVariant.quantity > 0) {
+                    newVariant.availability = 'Disponible';
+                } else {
+                    newVariant.availability = 'Agotado';
+                }
+                await newVariant.save();
+                variantsIds.push(newVariant._id);
+                totalQuantity += newVariant.quantity;
+            }
+            newProduct.variants = variantsIds;
+            newProduct.quantityInStock = totalQuantity;
+            await newProduct.save();
+        }
+
+        res.status(StatusCodes.CREATED).json({ newProduct });
+    } catch (error) {
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
+        console.log(error);
+    }
+}
+
+const updateProduct = async (req, res) => {
     try {
         const updatedProduct = await Product.findByIdAndUpdate(req.params.id, req.body, { new: true });
         res.status(StatusCodes.OK).json({ msg: "Producto Modificado Correctamente", product: updatedProduct });
@@ -60,6 +102,7 @@ module.exports = {
     getAllProducts,
     getProductById,
     createProduct,
+    createProductWithVariants,
     updateProduct,
     deleteProduct,
 };

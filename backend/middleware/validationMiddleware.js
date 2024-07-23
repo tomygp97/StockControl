@@ -26,6 +26,10 @@ const validateProduct = withValidationErrors([
     body('category').notEmpty().withMessage('La categoría es requerida'),
     body('description')
     .optional().if(body('description').exists()).isLength({ min: 5, max: 300 }).withMessage('La descripción debe tener entre 5 y 300 caracteres'),
+    body('variants').optional().isArray().withMessage('Las variantes deben ser un array'),
+    body('variants.*.color').optional().notEmpty().isIn(['Azul', 'Beige', 'Negro', 'Rojo', 'Verde']).withMessage('El color debe ser Azul, Beige, Negro, Rojo o Verde'),
+    body('variants.*.size').optional().notEmpty().isIn(['34', '36', '38', '40', '42', '44', '46', '48', '50', '52', '54']).withMessage('El talle debe ser un valor entre 34 y 54'),
+    body('variants.*.quantity').optional().notEmpty().isInt({ min: 0 }).withMessage('La Cantidad debe ser un número positivo'),
 ]);
 
 const validateProductUpdate = withValidationErrors([
@@ -34,6 +38,11 @@ const validateProductUpdate = withValidationErrors([
     body('category').optional().notEmpty().withMessage('La categoría es requerida'),
     body('description').optional()
         .if(body('description').exists()).isLength({ min: 5, max: 300 }).withMessage('La descripción debe tener entre 5 y 300 caracteres'),
+    // Variants validation only if variants are provided
+    body('variants').optional().isArray().withMessage('Las variantes deben ser un array'),
+    body('variants.*.color').optional().notEmpty().withMessage('El color es requerido').isIn(['Azul', 'Beige', 'Negro', 'Rojo', 'Verde']).withMessage('El color debe ser Azul, Beige, Negro, Rojo o Verde'),
+    body('variants.*.size').optional().notEmpty().withMessage('El tamaño es requerido').isIn(['34', '36', '38', '40', '42', '44', '46', '48', '50', '52', '54']).withMessage('El talle debe ser un valor entre 34 y 54'),
+    body('variants.*.quantity').optional().notEmpty().withMessage('La cantidad es requerida').isInt({ min: 0 }).withMessage('La cantidad debe ser un número positivo'),
 ]);
 
 
