@@ -3,10 +3,11 @@ const { body, param, validationResult  } = require('express-validator');
 const { StatusCodes } = require('http-status-codes');
 
 // Models
-const Product = require('../models/productModel');
-const Variant = require('../models/variantModel');
 const Cost = require('../models/costModel');
+const Customer = require('../models/customerModel');
+const Product = require('../models/productModel');
 const Sale = require('../models/saleModel');
+const Variant = require('../models/variantModel');
 
 const withValidationErrors = (validateValues) => {
     return [validateValues, (req, res, next) => {
@@ -93,31 +94,48 @@ const validateSale = withValidationErrors([
     body('bill').optional().isBoolean().withMessage('El campo factura debe ser un valor booleano'),
     body('status').optional().isIn(['Pendiente', 'Completado', 'Cancelada']).withMessage('El estado debe ser uno de los siguientes: Pendiente, Completado, Cancelada'),
 ]);
-// const validateSale = withValidationErrors([
-//     body('productsSold').notEmpty().withMessage('Los productos vendidos son requeridos').isArray({ min: 1 }).withMessage('Los productos vendidos son requeridos'),
-//     body('productsSold.*.product').notEmpty().withMessage('El producto es requerido'),
-//     body('productsSold.*.variant').notEmpty().withMessage('La variante es requerida'),
-//     body('productsSold.*.quantitySold').notEmpty().withMessage('La cantidad vendida es requerida')
-//         .isInt({ min: 0 }).withMessage('La cantidad vendida debe ser un número positivo'),
-//     body('customer').notEmpty().withMessage('El cliente es requerido'),
-//     body('customer.name').notEmpty().withMessage('El nombre del cliente es requerido'),
-//     body('customer.contact').optional().isLength({ min: 5, max: 50 }).withMessage('El contacto del cliente debe tener entre 5 y 50 caracteres'),
-//     body('customer.phone').optional().isMobilePhone().withMessage('El teléfono del cliente debe ser válido'),
-//     body('customer.email').optional().isEmail().withMessage('El correo electrónico del cliente debe ser válido'),
-//     body('customer.address').optional().isLength({ min: 5, max: 50 }).withMessage('La dirección del cliente debe tener entre 5 y 50 caracteres'),
-//     body('customer.notes').optional().isLength({ min: 5, max: 300 }).withMessage('Las notas del cliente deben tener entre 5 y 300 caracteres'),
-//     body('paymentDetails').notEmpty().withMessage('Los detalles del pago son requeridos'),
-//     body('paymentDetails.method').notEmpty().withMessage('El metodo de pago es requerido')
-//         .isIn(['Efectivo', 'Transferencia', 'Mercadopago']).withMessage('Los detalles del pago deben ser Efectivo, Transferencia o Mercadopago'),
-//     body('bill').optional().isBoolean().withMessage('El campo factura debe ser un valor booleano'),
-//     body('status').optional().isIn(['Pendiente', 'Completado', 'Cancelada']).withMessage('El estado debe ser Pendiente, Completado o Cancelada'),
-// ]);
+
+const validateSaleUpdate = withValidationErrors([
+    body('productsSold').optional().notEmpty().withMessage('Los productos vendidos son requeridos')
+        .isArray({ min: 1 }).withMessage('Los productos vendidos deben ser un arreglo con al menos un producto'),
+    body('productsSold.*.product').notEmpty().withMessage('El producto es requerido'),
+    body('productsSold.*.variant').notEmpty().withMessage('La variante es requerida'),
+    body('productsSold.*.quantitySold').notEmpty().withMessage('La cantidad vendida es requerida')
+        .isInt({ min: 1 }).withMessage('La cantidad vendida debe ser un número entero positivo'),
+    body('customer').optional().notEmpty().withMessage('El cliente es requerido')
+        .isMongoId().withMessage('El cliente debe ser una referencia válida de MongoDB'),
+    body('paymentDetails').optional().notEmpty().withMessage('Los detalles del pago son requeridos'),
+    body('paymentDetails.method').optional().notEmpty().withMessage('El método de pago es requerido')
+        .isIn(['Efectivo', 'Transferencia', 'Mercadopago']).withMessage('El método de pago debe ser uno de los siguientes: Efectivo, Transferencia, Mercadopago'),
+    body('bill').optional().isBoolean().withMessage('El campo factura debe ser un valor booleano'),
+    body('status').optional().isIn(['Pendiente', 'Completado', 'Cancelada']).withMessage('El estado debe ser uno de los siguientes: Pendiente, Completado, Cancelada'),
+]);
+
+
+//* Cuastomer Validations
+const validateCustomer = withValidationErrors([
+    body('name').notEmpty().withMessage('El nombre es requerido'),
+    body('contact').optional().isLength({ min: 5, max: 50 }).withMessage('El contacto debe tener entre 5 y 50 caracteres'),
+    body('phone').optional().isMobilePhone().withMessage('El teléfono debe ser válido'),
+    body('email').optional().isEmail().withMessage('El correo electrónico debe ser válido'),
+    body('address').optional().isLength({ min: 5, max: 50 }).withMessage('La dirección debe tener entre 5 y 50 caracteres'),
+    body('notes').optional().isLength({ min: 5, max: 300 }).withMessage('Las notas deben tener entre 5 y 300 caracteres'),
+]);
+const validateCustomerUpdate = withValidationErrors([
+    body('name').optional().notEmpty().withMessage('El nombre es requerido'),
+    body('contact').optional().notEmpty().isLength({ min: 5, max: 50 }).withMessage('El contacto debe tener entre 5 y 50 caracteres'),
+    body('phone').optional().notEmpty().isMobilePhone().withMessage('El teléfono debe ser válido'),
+    body('email').optional().notEmpty().isEmail().withMessage('El correo electrónico debe ser válido'),
+    body('address').optional().notEmpty().isLength({ min: 5, max: 50 }).withMessage('La dirección debe tener entre 5 y 50 caracteres'),
+    body('notes').optional().notEmpty().isLength({ min: 5, max: 300 }).withMessage('Las notas deben tener entre 5 y 300 caracteres'),
+]);
 
 //* Validate ID mongo
 const validateIdParam = (model) => {
     // Array de validaciones para el parametro id
     const validateValues = [
         param('id').custom(async (value) => {
+            console.log('ID recibido:', value);
             const isValid = mongoose.Types.ObjectId.isValid(value);
             if (!isValid) throw new Error('El ID de MongoDB no es válido');
 
@@ -131,16 +149,20 @@ const validateIdParam = (model) => {
 };
 
 module.exports = {
+    validateCost,
+    validateCustomer,
+    validateCustomerUpdate,
     validateProduct,
     validateProductUpdate,
+    validateSale,
+    validateSaleUpdate,
     validateVariant,
     validateVariantUpdate,
-    validateCost,
-    validateSale,
 
     // Validaciones de ID
-    validateProductIdParam: validateIdParam(Product),
-    validateVariantIdParam: validateIdParam(Variant),
     validateCostIdParam: validateIdParam(Cost),
+    validateCustomerIdParam: validateIdParam(Customer),
+    validateProductIdParam: validateIdParam(Product),
     validateSaleIdParam: validateIdParam(Sale),
+    validateVariantIdParam: validateIdParam(Variant),
 };

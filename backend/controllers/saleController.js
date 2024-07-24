@@ -15,7 +15,10 @@ const getAllSales = async (req, res) => {
 };
 const getSaleById = async (req, res) => {
     try {
-        const sale = await Sale.findById(req.params.id).populate('product variant');
+        const sale = await Sale.findById(req.params.id)
+            .populate('productsSold.product')
+            .populate('productsSold.variant')
+            .populate('customer');
         res.status(StatusCodes.OK).json({ sale });
     } catch (error) {
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
@@ -25,6 +28,8 @@ const getSaleById = async (req, res) => {
 const getSalesbyCustomer = async (req, res) => {
     try {
         const customerId = req.params.id;
+        console.log("req.params", req.params)
+        console.log("customerId", customerId);
         const sales = await Sale.find({ customer: customerId })
             .populate('productsSold.product')
             .populate('productsSold.variant');
@@ -46,7 +51,8 @@ const createSale = async(req, res) => {
 
 const updateSale = async (req, res) => {
     try {
-        
+        const updatedSale = await saleService.updateSale(req.params.id, req.body);
+        res.status(StatusCodes.OK).json({ updatedSale });
     } catch (error) {
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
     }
@@ -54,7 +60,8 @@ const updateSale = async (req, res) => {
 
 const deleteSale = async (req, res) => {
     try {
-        
+        const deletedSale = await Sale.findByIdAndDelete(req.params.id);
+        res.status(StatusCodes.OK).json({ deletedSale });
     } catch (error) {
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
     }

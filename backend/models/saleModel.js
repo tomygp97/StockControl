@@ -24,33 +24,6 @@ const saleSchema = new Schema({
             min: 0,
         },
     }],
-    // customer: {
-    //     name: {
-    //         type: String,
-    //         required: true,
-    //         trim: true,
-    //     },
-    //     contact: {
-    //         type: String,
-    //         trim: true,
-    //     },
-    //     phone: {
-    //         type: Number,
-    //         trim: true,
-    //     },
-    //     email: {
-    //         type: String,
-    //         trim: true,
-    //     },
-    //     address: {
-    //         type: String,
-    //         trim: true,
-    //     },
-    //     notes: {
-    //         type: String,
-    //         trim: true,
-    //     },
-    // },
     customer: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Customer',

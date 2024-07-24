@@ -9,6 +9,7 @@ const morgan = require('morgan');
 const productRouter = require('./routes/porductRouter');
 const costRouter = require('./routes/costRouter');
 const saleRouter = require('./routes/saleRouter');
+const customerRouter = require('./routes/customerRouter');
 
 
 const port = process.env.PORT || 5000;
@@ -28,8 +29,9 @@ app.get('/', (req, res) => {
     res.send('Hola mundo desde StockControl!');
 });
 
-app.use('/products', productRouter);
 app.use('/costs', costRouter);
+app.use('/customers', customerRouter);
+app.use('/products', productRouter);
 app.use('/sales', saleRouter);
 
 app.use('*', (req, res) => {

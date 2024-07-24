@@ -29,7 +29,14 @@ const createCustomer = async (req, res) => {
     }
 };
 
-const updateCustomer = async (req, res) => {};
+const updateCustomer = async (req, res) => {
+    try {
+        const updatedCustomer = await Customer.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        res.status(StatusCodes.OK).json({ "Cliente actualizado: ": updatedCustomer });
+    } catch (error) {
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
+    }
+};
 
 const deleteCustomer = async (req, res) => {
     try {
@@ -39,9 +46,6 @@ const deleteCustomer = async (req, res) => {
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
     }
 };
-    
-
-
 
 module.exports = {
     getAllCustomers,
