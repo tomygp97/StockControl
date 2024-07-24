@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const Product = require('../models/productModel');
 const Variant = require('../models/variantModel');
 const Sale = require('../models/saleModel');
+const Customer = require('../models/customerModel');
 
 // Helpers
 const updateStockOnSale = require('../helpers/updateStockOnSale');
@@ -14,12 +15,18 @@ const saleService = {
         let session;
 
         try {
-            const { productsSold, customer, paymentDetails, bill } = saleData;
+            const { productsSold, customerId, paymentDetails, bill } = saleData;
 
             // Verificar que productsSold no sea nulo o vacío
             if (!productsSold || !Array.isArray(productsSold) || productsSold.length === 0) {
                 throw new Error("productsSold no es válido");
             }
+
+            const customer = await Customer.findById(customerId);
+            if (!customer) {
+                throw new Error("Cliente no encontrado");
+            }
+
             // Iniciamos una transacción
             session = await mongoose.startSession();
             session.startTransaction();
@@ -46,7 +53,7 @@ const saleService = {
 
                 const newSale = new Sale({
                     productsSold: productsSoldWithDetails,
-                    customer,
+                    customer: customer._id,
                     paymentDetails,
                     bill: bill || false,
                     status: 'Pendiente',

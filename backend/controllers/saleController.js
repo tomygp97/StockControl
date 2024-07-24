@@ -12,7 +12,7 @@ const getAllSales = async (req, res) => {
     } catch (error) {
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
     }
-}
+};
 const getSaleById = async (req, res) => {
     try {
         const sale = await Sale.findById(req.params.id).populate('product variant');
@@ -20,7 +20,19 @@ const getSaleById = async (req, res) => {
     } catch (error) {
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
     }
-}
+};
+
+const getSalesbyCustomer = async (req, res) => {
+    try {
+        const customerId = req.params.id;
+        const sales = await Sale.find({ customer: customerId })
+            .populate('productsSold.product')
+            .populate('productsSold.variant');
+        res.status(StatusCodes.OK).json({ sales });
+    } catch (error) {
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
+    }
+};
 
 const createSale = async(req, res) => {
     try {
@@ -38,7 +50,7 @@ const updateSale = async (req, res) => {
     } catch (error) {
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
     }
-}
+};
 
 const deleteSale = async (req, res) => {
     try {
@@ -46,11 +58,12 @@ const deleteSale = async (req, res) => {
     } catch (error) {
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
     }
-}
+};
 
 module.exports = {
     getAllSales,
     getSaleById,
+    getSalesbyCustomer,
     createSale,
     updateSale,
     deleteSale,

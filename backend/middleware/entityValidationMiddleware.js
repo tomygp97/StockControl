@@ -4,6 +4,7 @@ const { StatusCodes } = require('http-status-codes');
 
 const Product = require('../models/productModel');
 const Variant = require('../models/variantModel');
+const Customer = require('../models/customerModel');
 
 const validateVariantExists =  async (req, res, next) => {
     try {
@@ -50,4 +51,20 @@ const validateSaleProductAndVariant = async (req, res, next) => {
     }
 }
 
-module.exports = {validateVariantExists, validateSaleProductAndVariant};
+const validateCustomerExists = async (req, res, next) => {
+    try {
+        const { customerId } = req.params;
+
+        const customer = await Customer.findById(customerId);
+        if (!customer) {
+            return res.status(StatusCodes.NOT_FOUND).json({ error: 'Cliente no encontrado' });
+        }
+
+        req.customer = customer;
+        next();
+    } catch (error) {
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
+    }
+}
+
+module.exports = {validateVariantExists, validateSaleProductAndVariant, validateCustomerExists};
