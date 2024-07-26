@@ -1,7 +1,7 @@
 'use client'
 
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
     Card,
@@ -16,14 +16,42 @@ import { Progress } from "@/components/ui/progress";
 
 import SalesTable from "./components/SalesTable"
 import SaleInfo from "./components/SaleInfo";
+import { fetchAllSales } from "../api/apiService";
 
 // Types
 import { Sale } from "@/types";
 
 const Sales = () => {
-
+    const [salesList, setSalesList] = useState([])
     const [activeSale, setActiveSale] = useState<Sale | null>(null);
-    console.log(activeSale);
+    console.log("activeSale: ", activeSale)
+    const [loading, setLoading] = useState(false)
+
+    const saleNumber = salesList.length
+    console.log("saleNumber: ", saleNumber)
+
+
+    const fetchSalesData = async() => {
+        try {
+            setLoading(true);
+            const salesData = await fetchAllSales();
+            setSalesList(salesData);
+        } catch (error) {
+            
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    useEffect(() => {
+        fetchSalesData();
+    }, [])
+
+    useEffect(() => {
+        if (salesList.length > 0) {
+            setActiveSale(salesList[salesList.length - 1]);
+        }
+    }, [salesList]);
 
 
     return (
@@ -71,10 +99,10 @@ const Sales = () => {
                             </CardFooter>
                         </Card>
                     </div>
-                    <SalesTable activeSale={activeSale} setActiveSale={setActiveSale}/>
+                    <SalesTable activeSale={activeSale} setActiveSale={setActiveSale} salesList={salesList} />
                 </div>
                 <div className="mr-14">
-                    <SaleInfo activeSale={activeSale} />
+                    <SaleInfo activeSale={activeSale} saleNumber={saleNumber} />
                 </div>
             </div>
         </div>

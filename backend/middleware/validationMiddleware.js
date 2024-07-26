@@ -135,7 +135,6 @@ const validateIdParam = (model) => {
     // Array de validaciones para el parametro id
     const validateValues = [
         param('id').custom(async (value) => {
-            console.log('ID recibido:', value);
             const isValid = mongoose.Types.ObjectId.isValid(value);
             if (!isValid) throw new Error('El ID de MongoDB no es válido');
 

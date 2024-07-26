@@ -1,7 +1,7 @@
 'use client'
 
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
     Tabs,
     TabsContent,
@@ -23,35 +23,20 @@ import { format } from 'date-fns';
 // Types
 import { Sale } from "@/types";
 
-//! BORRAR DATOS DE EJEMPLO
-import exampleSales from "../data";
-
 interface SalesTableProps {
     activeSale: (Sale & { saleNumber?: number }) | null;
     setActiveSale: (sale: (Sale & { saleNumber?: number }) | null) => void;
+    salesList: Sale[];
 }
 
-const SalesTable: React.FC<SalesTableProps> = ({activeSale, setActiveSale}) => {
-    const [sales, setSales] = useState<Sale[]>(exampleSales);
+const SalesTable: React.FC<SalesTableProps> = ({activeSale, setActiveSale, salesList}) => {
 
     const impuestos = 1000;
 
-    const getSales = async() => {
-        // Remplazar con llamada a la API
-        setSales(exampleSales);
-        if ( sales.length > 0 && !activeSale) {
-            setActiveSale({...exampleSales[exampleSales.length - 1], saleNumber: exampleSales.length });
-        }
-    };
-
-    useEffect(() => {
-        getSales();
-    }, []);
-
     const selectSale = (id: Sale['_id']) => {
-        const selectedSale = sales.find(sale => sale._id === id);
+        const selectedSale = salesList.find(sale => sale._id === id);
         if (selectedSale && selectedSale._id !== activeSale?._id) {
-            const selectedSaleIndex = sales.findIndex(sale => sale._id === id);
+            const selectedSaleIndex = salesList.findIndex(sale => sale._id === id);
             const saleNumber = selectedSaleIndex + 1; // Calcula el número de venta basado en el orden inverso
             setActiveSale({ ...selectedSale, saleNumber });
         }
@@ -100,7 +85,8 @@ const SalesTable: React.FC<SalesTableProps> = ({activeSale, setActiveSale}) => {
                             </TableHeader>
                             <TableBody>
                                 {
-                                    sales.slice().reverse().map((sale, index, arr) => {
+                                    // sales.slice().reverse().map((sale, index, arr) => {
+                                    salesList.slice().reverse().map((sale, index, arr) => {
                                         const saleNumber = arr.length - index;
                                         return (
                                             <TableRow key={sale._id} onClick={() => selectSale(sale._id)} className={ sale._id === activeSale?._id ? "bg-accent" : "" }>

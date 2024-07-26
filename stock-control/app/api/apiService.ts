@@ -4,6 +4,7 @@ import { costApi } from './costApi';
 import { saleApi } from './saleApi';
 import { productApi } from './productApi';
 import { variantApi } from './variantApi';
+import { customerApi } from './customerApi';
 // Types
 import { Product, Variant } from '@/types';
 
@@ -104,6 +105,35 @@ export const deleteVariant = async(productId: string, variantId: string) => {
         } else {
             throw new Error( response.data.msg || 'No se pudo eliminar la variante');
         }
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+//* Customers
+export const fetchAllCustomers = async() => {
+    try {
+        const response = await customerApi.get('/');
+        return response.data.customers;
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+//* Sales
+export const fetchAllSales = async() => {
+    try {
+        const response = await saleApi.get('/');
+        return response.data.sales
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export const fetchSingleSale = async(saleId: string) => {
+    try {
+        const response = await saleApi.get(`/${saleId}`);        
+        return response.data.sale
     } catch (error) {
         console.log(error);
     }

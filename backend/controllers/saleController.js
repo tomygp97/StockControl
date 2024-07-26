@@ -7,7 +7,8 @@ const saleService = require('../services/saleServices');
 
 const getAllSales = async (req, res) => {
     try {
-        const sales = await Sale.find({});
+        const sales = await Sale.find({}).
+            populate('customer');
         res.status(StatusCodes.OK).json({  sales  });
     } catch (error) {
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });

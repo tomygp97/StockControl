@@ -1,3 +1,6 @@
+'use client'
+
+
 import { Button } from "@/components/ui/button";
 import {
     Card,
@@ -14,13 +17,32 @@ import { format } from 'date-fns';
 
 // Types
 import { Sale } from "@/types";
+import { useEffect, useState } from "react";
+import { fetchSingleSale } from "@/app/api/apiService";
 
 interface SaleInfoProps {
     activeSale: (Sale & { saleNumber?: number }) | null;
+    saleNumber: number;
 }
 
-const SaleInfo: React.FC<SaleInfoProps> = ({activeSale}) => {
+const SaleInfo: React.FC<SaleInfoProps> = ({activeSale, saleNumber}) => {
+    const [saleInfo, setSaleInfo] = useState<Sale>();
+    console.log("saleInfo: ", saleInfo);
     const impuestos = 1000;
+
+    useEffect(() => {
+        const fetchSaleInfo = async() => {
+            try {
+                const saleInfo = await fetchSingleSale(activeSale?._id!);
+                setSaleInfo(saleInfo);
+            } catch (error) {
+                console.log(error);
+            }
+        }
+        if (activeSale !== null) {
+            fetchSaleInfo();
+        }
+    }, [activeSale])
 
 
     return (
@@ -28,13 +50,13 @@ const SaleInfo: React.FC<SaleInfoProps> = ({activeSale}) => {
             <CardHeader className="flex flex-row items-start bg-muted/50">
                 <div className="grid gap-0.5">
                     <CardTitle className="group flex items-center gap-2 text-lg">
-                        Venta #{ activeSale?.saleNumber }
+                        Venta #{ activeSale?.saleNumber ?? saleNumber }
                         <Button size="icon" variant="outline" className="h-6 w-6 opacity-0 transition-opacity group-hover:opacity-100">
                             <Copy className="h-3 w-3" />
                             <span className="sr-only">Copy Ordedr ID</span>
                         </Button>
                     </CardTitle>
-                    <CardDescription>Fecha: { activeSale?.date &&format(new Date(activeSale.date), 'dd-MM-yyyy') }</CardDescription>
+                    <CardDescription>Fecha: { saleInfo?.date &&format(new Date(saleInfo.date), 'dd-MM-yyyy') }</CardDescription>
                 </div>
                 <div className="ml-auto flex items-center gap-1">
                     <Button size="sm" variant="outline" className="h-8 gap-1">
@@ -62,8 +84,8 @@ const SaleInfo: React.FC<SaleInfoProps> = ({activeSale}) => {
                     <div className="font-semibold">Detalle de Venta</div>
                     <ul className="grid gap-3">
                         {
-                            activeSale?.productsSold.map((productSold) => (
-                                <li key={`${productSold.product._id}-${productSold.variant._id}`} className="flex items-center justify-between">
+                            saleInfo?.productsSold.map((productSold, index) => (
+                                <li key={`${productSold.product._id}-${productSold.variant._id}-${index}`} className="flex items-center justify-between">
                                         <span className="text-muted-foreground">
                                             { productSold.product.name } x{ productSold.quantitySold }
                                         </span>
@@ -76,7 +98,7 @@ const SaleInfo: React.FC<SaleInfoProps> = ({activeSale}) => {
                     <ul className="grid gap-3">
                         <li className="flex items-center justify-between">
                             <span className="text-muted-foreground">Subtotal</span>
-                            <span>${activeSale?.productsSold?.reduce((total, item) => total + item.totalPrice, 0)}</span>
+                            <span>${saleInfo?.productsSold?.reduce((total, item) => total + item.totalPrice, 0)}</span>
                         </li>
                         <li className="flex items-center justify-between">
                             <span className="text-muted-foreground">Impuestos</span>
@@ -84,7 +106,7 @@ const SaleInfo: React.FC<SaleInfoProps> = ({activeSale}) => {
                         </li>
                         <li className="flex items-center justify-between font-semibold">
                             <span className="text-muted-foreground">Total</span>
-                            <span>${(activeSale?.productsSold?.reduce((total, item) => total + item.totalPrice, 0) || 0) + impuestos}</span>
+                            <span>${(saleInfo?.productsSold?.reduce((total, item) => total + item.totalPrice, 0) || 0) + impuestos}</span>
                         </li>
                     </ul>
                 </div>
@@ -112,20 +134,32 @@ const SaleInfo: React.FC<SaleInfoProps> = ({activeSale}) => {
                     <dl className="grid gap-3">
                         <div className="flex items-center justify-between">
                             <dt className="text-muted-foreground">Cliente</dt>
-                            <dd>{ activeSale?.customer.name }</dd>
+                            <dd>{ saleInfo?.customer.name }</dd>
                         </div>
-                        <div className="flex items-center justify-between">
-                            <dt className="text-muted-foreground">Correo</dt>
-                            <dd>
-                                <a href="mailto:">{ activeSale?.customer.contact }</a>
-                            </dd>
-                        </div>
-                        <div className="flex items-center justify-between">
+                        {
+                            saleInfo?.customer.contact &&
+                            <div className="flex items-center justify-between">
+                                <dt className="text-muted-foreground">Correo</dt>
+                                <dd>
+                                    <a href="mailto:">{ saleInfo?.customer.contact }</a>
+                                </dd>
+                            </div>
+                        }
+                        {
+                            saleInfo?.customer.phone &&
+                            <div className="flex items-center justify-between">
+                                <dt className="text-muted-foreground">Teléfono</dt>
+                                <dd>
+                                    <a href="tel:">+54 { saleInfo?.customer.phone }</a>
+                                </dd>
+                            </div>
+                        }
+                        {/* <div className="flex items-center justify-between">
                             <dt className="text-muted-foreground">Teléfono</dt>
                             <dd>
-                                <a href="tel:">+54 { activeSale?.customer.phone }</a>
+                                <a href="tel:">+54 { saleInfo?.customer.phone }</a>
                             </dd>
-                        </div>
+                        </div> */}
                     </dl>
                 </div>
                 <Separator className="my-4" />
@@ -136,7 +170,7 @@ const SaleInfo: React.FC<SaleInfoProps> = ({activeSale}) => {
                             <dt className="flex items-center text-muted-foreground">
                                 Método de Pago
                             </dt>
-                            <dd>{ activeSale?.paymentDetails.method }</dd>
+                            <dd>{ saleInfo?.paymentDetails.method }</dd>
                         </div>
                         <div className="flex items-center justify-between">
                             <dt className="flex items-center text-muted-foreground">
