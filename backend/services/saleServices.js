@@ -13,81 +13,96 @@ const updateAvailability = require('../helpers/updateAvailability');
 const saleService = {
     createSale: async (saleData) => {
         let session;
-
+    
         try {
             const { productsSold, customer, paymentDetails, bill } = saleData;
-
+    
             // Verificar que productsSold no sea nulo o vacío
             if (!productsSold || !Array.isArray(productsSold) || productsSold.length === 0) {
                 throw new Error("productsSold no es válido");
             }
-
+    
             const customerExists = await Customer.findById(customer);
             if (!customerExists) {
                 throw new Error("Cliente no encontrado en saleService");
             }
-
+    
             // Iniciamos una transacción
             session = await mongoose.startSession();
             session.startTransaction();
-
+    
             const productsSoldWithDetails = [];
             let errors = [];
-
+            let totalPrice = 0;
+    
             for (const productSold of productsSold) {
-                const { product, variant, quantitySold } = productSold;
-
+                const { product, variants } = productSold;
+    
                 const productData = await Product.findById(product).session(session);
-                const totalPrice = productData.price * quantitySold;
-
-                try {
-                    await updateStockOnSale(product, variant, quantitySold, session, 0); // OriginalQuantitySold = 0 ya que es una nueva venta
-                } catch (error) {
-                    errors.push(error.message);
+    
+                let productTotalPrice = 0;
+                let productTotalQuantitySold = 0;
+    
+                for (const variantSold of variants) {
+                    const { variant, quantitySold } = variantSold;
+    
+                    const variantData = await Variant.findById(variant).session(session);
+    
+                    productTotalPrice += productData.price * quantitySold;
+                    productTotalQuantitySold += quantitySold;
+    
+                    try {
+                        await updateStockOnSale(product, variant, quantitySold, session, 0); // OriginalQuantitySold = 0 ya que es una nueva venta
+                    } catch (error) {
+                        errors.push(error.message);
+                    }
+    
+                    await updateAvailability(variant, session);
                 }
-
-                await updateAvailability(variant, session);
-
+    
                 productsSoldWithDetails.push({
                     product,
-                    variant,
-                    quantitySold,
-                    totalPrice,
+                    variants,
+                    totalProductPrice: productTotalPrice,
+                    totalQuantitySold: productTotalQuantitySold,
                 });
+    
+                totalPrice += productTotalPrice;
             }
-
+    
             if (errors.length > 0) {
                 throw new Error(errors.join(', '));
             }
-
+    
             const newSale = new Sale({
                 productsSold: productsSoldWithDetails,
                 customer: customerExists._id,
                 paymentDetails,
                 bill: bill || false,
                 status: 'Pendiente',
+                totalPrice,
                 date: new Date(),
             });
-
-            await newSale.save({ session });            
+    
+            await newSale.save({ session });
     
             // Confirmamos la transacción
             await session.commitTransaction();
-
+    
             return newSale;
         } catch (error) {
-            console.log("Error en createSale: ",error);
+            console.log("Error en createSale: ", error);
             // Si algo sale mal, revierte los cambios
             if (session) {
                 await session.abortTransaction();
             }
-
+    
             throw error;
         } finally {
             // Cerramos la sesión
-            if(session) session.endSession();
+            if (session) session.endSession();
         }
-    },
+    },    
 
     updateSale: async (saleId, updateData) => {
         let session;

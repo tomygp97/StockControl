@@ -86,9 +86,9 @@ const SaleInfo: React.FC<SaleInfoProps> = ({activeSale, saleNumber}) => {
                         {
                             saleInfo?.productsSold.map((productSold, index) => (
                                 <li key={`${productSold.product._id}-${productSold.variant._id}-${index}`} className="flex items-center justify-between">
-                                        <span className="text-muted-foreground">
-                                            { productSold.product.name } x{ productSold.quantitySold }
-                                        </span>
+                                    <span className="text-muted-foreground">
+                                        { productSold.product.name } x{ productSold.quantitySold }
+                                    </span>
                                     <span>${productSold.totalPrice}</span>
                                 </li>
                             ))
@@ -154,12 +154,6 @@ const SaleInfo: React.FC<SaleInfoProps> = ({activeSale, saleNumber}) => {
                                 </dd>
                             </div>
                         }
-                        {/* <div className="flex items-center justify-between">
-                            <dt className="text-muted-foreground">Teléfono</dt>
-                            <dd>
-                                <a href="tel:">+54 { saleInfo?.customer.phone }</a>
-                            </dd>
-                        </div> */}
                     </dl>
                 </div>
                 <Separator className="my-4" />

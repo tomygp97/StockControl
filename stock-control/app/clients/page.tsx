@@ -86,9 +86,9 @@ const Clients = () => {
                             <CardContent>
                                 <ClientTable />
                             </CardContent>
-                            <CardFooter>
+                            {/* <CardFooter>
                                 Card Footer
-                            </CardFooter>
+                            </CardFooter> */}
                         </Card>
                     </TabsContent>
                 </Tabs>
