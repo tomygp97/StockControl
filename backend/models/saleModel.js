@@ -76,11 +76,6 @@ const saleSchema = new Schema({
                 min: 0,
             },
         }],
-        price: { // Precio unitario del producto
-            type: Number,
-            required: true,
-            min: 0,
-        },
         totalProductPrice: { // Precio total por producto
             type: Number,
             required: true,
@@ -113,14 +108,14 @@ const saleSchema = new Schema({
         enum: ['Pendiente', 'Completado', 'Cancelada'],
         default: 'Pendiente',
     },
-    date: {
-        type: Date,
-        default: Date.now,
-    },
     totalPrice: { // Precio total de la venta
         type: Number,
         required: true,
         min: 0,
+    },
+    date: {
+        type: Date,
+        default: Date.now,
     },
 }, { timestamps: true });
 

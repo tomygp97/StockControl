@@ -83,8 +83,10 @@ const validateSale = withValidationErrors([
     body('productsSold').notEmpty().withMessage('Los productos vendidos son requeridos')
         .isArray({ min: 1 }).withMessage('Los productos vendidos deben ser un arreglo con al menos un producto'),
     body('productsSold.*.product').notEmpty().withMessage('El producto es requerido'),
-    body('productsSold.*.variant').notEmpty().withMessage('La variante es requerida'),
-    body('productsSold.*.quantitySold').notEmpty().withMessage('La cantidad vendida es requerida')
+    body('productsSold.*.variants').notEmpty().withMessage('Las variantes son requeridas')
+        .isArray({ min: 1 }).withMessage('Las variantes deben ser un arreglo con al menos una variante'),
+    body('productsSold.*.variants.*.variant').notEmpty().withMessage('La variante es requerida'),
+    body('productsSold.*.variants.*.quantitySold').notEmpty().withMessage('La cantidad vendida es requerida')
         .isInt({ min: 1 }).withMessage('La cantidad vendida debe ser un número entero positivo'),
     body('customer').notEmpty().withMessage('El cliente es requerido')
         .isMongoId().withMessage('El cliente debe ser una referencia válida de MongoDB'),
@@ -94,6 +96,21 @@ const validateSale = withValidationErrors([
     body('bill').optional().isBoolean().withMessage('El campo factura debe ser un valor booleano'),
     body('status').optional().isIn(['Pendiente', 'Completado', 'Cancelada']).withMessage('El estado debe ser uno de los siguientes: Pendiente, Completado, Cancelada'),
 ]);
+// const validateSale = withValidationErrors([
+//     body('productsSold').notEmpty().withMessage('Los productos vendidos son requeridos')
+//         .isArray({ min: 1 }).withMessage('Los productos vendidos deben ser un arreglo con al menos un producto'),
+//     body('productsSold.*.product').notEmpty().withMessage('El producto es requerido'),
+//     body('productsSold.*.variant').notEmpty().withMessage('La variante es requerida'),
+//     body('productsSold.*.quantitySold').notEmpty().withMessage('La cantidad vendida es requerida')
+//         .isInt({ min: 1 }).withMessage('La cantidad vendida debe ser un número entero positivo'),
+//     body('customer').notEmpty().withMessage('El cliente es requerido')
+//         .isMongoId().withMessage('El cliente debe ser una referencia válida de MongoDB'),
+//     body('paymentDetails').notEmpty().withMessage('Los detalles del pago son requeridos'),
+//     body('paymentDetails.method').notEmpty().withMessage('El método de pago es requerido')
+//         .isIn(['Efectivo', 'Transferencia', 'Mercadopago']).withMessage('El método de pago debe ser uno de los siguientes: Efectivo, Transferencia, Mercadopago'),
+//     body('bill').optional().isBoolean().withMessage('El campo factura debe ser un valor booleano'),
+//     body('status').optional().isIn(['Pendiente', 'Completado', 'Cancelada']).withMessage('El estado debe ser uno de los siguientes: Pendiente, Completado, Cancelada'),
+// ]);
 
 const validateSaleUpdate = withValidationErrors([
     body('productsSold').optional().notEmpty().withMessage('Los productos vendidos son requeridos')

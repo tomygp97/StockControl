@@ -46,7 +46,8 @@ const saleService = {
                 for (const variantSold of variants) {
                     const { variant, quantitySold } = variantSold;
     
-                    const variantData = await Variant.findById(variant).session(session);
+                    // Eliminamos la declaración de variantData ya que no se utiliza
+                    // const variantData = await Variant.findById(variant).session(session);
     
                     productTotalPrice += productData.price * quantitySold;
                     productTotalQuantitySold += quantitySold;

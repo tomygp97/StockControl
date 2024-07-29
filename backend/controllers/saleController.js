@@ -18,7 +18,7 @@ const getSaleById = async (req, res) => {
     try {
         const sale = await Sale.findById(req.params.id)
             .populate('productsSold.product')
-            .populate('productsSold.variant')
+            .populate('productsSold.variants')
             .populate('customer');
         res.status(StatusCodes.OK).json({ sale });
     } catch (error) {
