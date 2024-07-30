@@ -26,30 +26,26 @@ export interface Sale {
     _id: string;
     productsSold: {
         product: Product;
-        variant: Variant;
-        // product: string;
-        // variant: string;
-        quantitySold: number;
-        totalPrice: number;
+        variants: {
+            variant: Variant;
+            quantitySold: number;
+        }[];
+        totalProductPrice: number;
+        totalQuantitySold: number;
     }[];
-    customer: {
-        name: string;
-        contact?: string;
-        phone?: number;
-        email?: string | undefined;
-        address?: string | undefined;
-        notes?: string | undefined;
-    };
+    customer: Customer;
     paymentDetails: {
         method: 'Efectivo' | 'Transferencia' | 'Mercadopago';
     };
     bill: boolean;
     status: 'Pendiente' | 'Completado' | 'Cancelada';
+    totalPrice: number;
     date: string;
     createdAt: string;
     updatedAt: string;
     __v: number;
 }
+
 
 export interface Customer {
     _id?: string;

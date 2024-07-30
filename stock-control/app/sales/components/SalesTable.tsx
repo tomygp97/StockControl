@@ -43,7 +43,7 @@ const SalesTable: React.FC<SalesTableProps> = ({activeSale, setActiveSale, sales
     };
 
     const calculateTotalPrice = (productsSold: Sale['productsSold']) => {
-        return productsSold.reduce((total, item) => total + item.totalPrice, 0);
+        return productsSold.reduce((total, item) => total + item.totalProductPrice, 0);
     };
 
 

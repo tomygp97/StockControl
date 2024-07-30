@@ -104,6 +104,12 @@ const ProductTable: React.FC<ProductTableProps> = ({products, handleDeleteProduc
                                 <DropdownMenuContent align="end">
                                     <DropdownMenuItem onClick={() => handleNavigateToEditProduct(product._id!)}>Editar</DropdownMenuItem>
                                     <DropdownMenuItem onClick={() => handleDeleteProduct(product._id!)}>Borrar</DropdownMenuItem>
+                                    {/* <DropdownMenuItem onClick={() => {
+                                        if (handleDeleteProduct) {
+                                            handleDeleteProduct(product._id!);
+                                        }
+                                        }}>Borrar
+                                    </DropdownMenuItem> */}
                                 </DropdownMenuContent>
                             </DropdownMenu>
                         </TableCell>

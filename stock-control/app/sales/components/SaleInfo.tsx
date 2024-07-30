@@ -85,11 +85,12 @@ const SaleInfo: React.FC<SaleInfoProps> = ({activeSale, saleNumber}) => {
                     <ul className="grid gap-3">
                         {
                             saleInfo?.productsSold.map((productSold, index) => (
-                                <li key={`${productSold.product._id}-${productSold.variant._id}-${index}`} className="flex items-center justify-between">
+                                // <li key={`${productSold.product._id}-${productSold.variants.variant._id}-${index}`} className="flex items-center justify-between">
+                                <li key={`${productSold.product._id}-${index}`} className="flex items-center justify-between">
                                     <span className="text-muted-foreground">
-                                        { productSold.product.name } x{ productSold.quantitySold }
+                                        { productSold.product.name } x{ productSold.totalQuantitySold }
                                     </span>
-                                    <span>${productSold.totalPrice}</span>
+                                    <span>${productSold.totalProductPrice}</span>
                                 </li>
                             ))
                         }
@@ -98,7 +99,8 @@ const SaleInfo: React.FC<SaleInfoProps> = ({activeSale, saleNumber}) => {
                     <ul className="grid gap-3">
                         <li className="flex items-center justify-between">
                             <span className="text-muted-foreground">Subtotal</span>
-                            <span>${saleInfo?.productsSold?.reduce((total, item) => total + item.totalPrice, 0)}</span>
+                            <span>${saleInfo?.productsSold?.reduce((total, item) => total + item.totalProductPrice, 0)}</span>
+                            {/* <span>${( saleInfo?.productsSold?.reduce((total, item) => total + item.totalProductPrice, 0) || 0)}</span> */}
                         </li>
                         <li className="flex items-center justify-between">
                             <span className="text-muted-foreground">Impuestos</span>
@@ -106,7 +108,7 @@ const SaleInfo: React.FC<SaleInfoProps> = ({activeSale, saleNumber}) => {
                         </li>
                         <li className="flex items-center justify-between font-semibold">
                             <span className="text-muted-foreground">Total</span>
-                            <span>${(saleInfo?.productsSold?.reduce((total, item) => total + item.totalPrice, 0) || 0) + impuestos}</span>
+                            <span>${(saleInfo?.productsSold?.reduce((total, item) => total + item.totalProductPrice, 0) || 0) + impuestos}</span>
                         </li>
                     </ul>
                 </div>

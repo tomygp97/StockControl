@@ -30,20 +30,22 @@ import {
     FormMessage,
 } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { PlusCircle } from "lucide-react";
+import { PlusCircle, Send, ShoppingCart } from "lucide-react";
 
 import { fetchAllProducts } from "@/app/api/apiService";
 
 // Types
 import { Product, Variant } from "@/types";
-import ProductTable from "@/app/products/components/ProductTable";
+
 
 
 
 const SelectProductSold = () => {
     const [productsList, setProductsList] = useState<Product[]>([]);
+    const [availableProducts, setAvailableProducts] = useState<Product[]>([])
     const [variantsList, setVariantsList ] = useState<Variant[]>([]);
     const [selectedProducts, setSelectedProducts] = useState<Product[] | []>([]);
+    console.log("selectedProducts: ", selectedProducts)
 
     const fetchProductsData = async() => {
         try {
@@ -58,53 +60,61 @@ const SelectProductSold = () => {
         fetchProductsData();
     }, [])
 
+    useEffect(() => {
+        // setAvailableProducts();
+        setAvailableProducts(productsList.filter((product) => product.quantityInStock > 0));
+
+    }, [productsList])
+
+
     return (
         <Table>
-            <TableCaption>Lista de los productos Vendidos</TableCaption>
             <TableHeader>
                 <TableRow>
-                    <TableHead>Producto</TableHead>
-                    <TableHead>Color</TableHead>
-                    <TableHead>Talle</TableHead>
-                    <TableHead className="text-right">Cantidad</TableHead>
+                    <TableHead className="sm:table-cell">Nombre</TableHead>
+                    <TableHead>Categoria</TableHead>
+                    <TableHead className="hidden md:table-cell">
+                        Precio
+                    </TableHead>
+                    <TableHead>
+                        <span className="sr-only">Vender</span>
+                    </TableHead>
                 </TableRow>
             </TableHeader>
+
             <TableBody>
-                { selectedProducts.length === 0 ? (
+            {
+                availableProducts.length === 0 ? (
                     <TableRow>
-                        <TableCell colSpan={4}>No hay productos disponibles</TableCell>
+                        <TableCell colSpan={5} className="h-24 text-center">
+                            No hay productos
+                        </TableCell>
                     </TableRow>
-                ) : (
-                    selectedProducts.map((product) => (
-                        <TableRow key={product._id}>
-                            <TableCell className="font-semibold">
-                                {product.name}
-                            </TableCell>
-                        </TableRow>
-                    )
-                ))}
-            </TableBody>
-            <TableFooter>
-                {/* <div>
-                    <Dialog>
-                        <DialogTrigger asChild>
-                            <Button variant="outline">
-                                Agregar producto
-                                <PlusCircle className="ml-2 h-4 w-4" />
+                ) :
+                availableProducts.map((product) => (
+                    <TableRow key={product._id}>
+                        <TableCell className="font-medium">
+                            { product.name }
+                        </TableCell>
+                        <TableCell className="hidden md:table-cell">
+                            { product.category }
+                        </TableCell>
+                        <TableCell className="hidden md:table-cell">
+                            ${ product.price }
+                        </TableCell>
+                        <TableCell className="flex justify-end">
+                            <Button variant="outline" size="icon">
+                                <ShoppingCart className="w-4 h-4"/>
                             </Button>
-                        </DialogTrigger>
-                        <DialogContent>
-                            <DialogHeader>
-                                <DialogTitle>Lista de Productos</DialogTitle>
-                                <DialogDescription>
-                                    Selecciona el producto vendido.
-                                </DialogDescription>
-                            </DialogHeader>
-                            <DialogContent>
-                            </DialogContent>
-                        </DialogContent>
-                    </Dialog>
-                </div> */}
+                        </TableCell>
+                    </TableRow>
+                ))
+            }
+            </TableBody>
+            <TableFooter className=" grid grid-cols-2 gap-4">
+                {/* //TODO Add pagination */}
+                <Button variant="outline">Prev</Button>
+                <Button variant="outline">Next</Button>
             </TableFooter>
         </Table>
     )

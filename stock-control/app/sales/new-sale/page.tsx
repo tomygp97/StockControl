@@ -1,3 +1,6 @@
+'use client'
+
+
 import Link from "next/link";
 import {
     Breadcrumb,
@@ -26,13 +29,63 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+    Form,
+    FormControl,
+    FormItem,
+    FormLabel,
+    FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { ChevronLeft, PlusCircle } from "lucide-react";
 import SelectProductSold from "../components/SelectProductSold";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { fetchAllProducts } from "@/app/api/apiService";
+import { useEffect, useState } from "react";
 
-const page = () => {
+// Types
+import { Product } from "@/types";
+
+const formSchema = z.object({
+    productsSold: z.array(
+        z.object({
+            productId: z.string().min(1, { message: "Producto es requerido" }),
+            variantId: z.string().min(1, { message: "Variante es requerida" }),
+            quantitySold: z.number().min(1, { message: "La cantidad vendida debe ser al menos 1" }),
+        })
+    ).min(1, { message: "Al menos un producto debe ser vendido" }),
+    customer: z.string().min(1, { message: "Cliente es requerido" }),
+    paymentDetails: z.object({
+        method: z.enum(['Efectivo', 'Transferencia', 'Mercadopago'], { message: "Método de pago inválido" }),
+    }),
+    bill: z.boolean(),
+    status: z.enum(['Pendiente', 'Completado', 'Cancelada'], { message: "Estado inválido" }),
+});
+
+const NewSalePage = () => {
+
+    const form = useForm<z.infer<typeof formSchema>>({
+        resolver: zodResolver(formSchema),
+        defaultValues: {
+            productsSold: [],
+            customer: "",
+            paymentDetails: {
+                method: 'Efectivo',
+            },
+            bill: false,
+            status: 'Pendiente',
+        }
+    });
+
+    const onSubmit = (data: z.infer<typeof formSchema>) => {
+        // Manejar el envío del formulario
+        console.log("Form data:", data);
+    };
+
     return (
         <div className="flex min-h-screen w-full flex-col bg-muted/40">
             <div className=" flex flex-col sm:gap-4 sm:py-4">
@@ -73,32 +126,27 @@ const page = () => {
                                         Volver
                                     </Button>
                                 </Link>
-                                <Button size="sm">Guardar</Button>
+                                <Form {...form}>
+                                    <form onSubmit={form.handleSubmit(onSubmit)}>
+                                        <Button type="submit" size="sm">
+                                            Guardar
+                                        </Button>
+                                    </form>
+                                </Form>
                             </div>
                         </div>
                         <div className="grid gap-4 lg:gap-8 md:grid-cols-[1fr_250px] lg:grid-cols-3">
                             <div className="grid auto-rows-max items-start gap-4 lg:col-span-2 lg:gap-8">
                                 <Card>
-                                    <Dialog>
-                                        <CardHeader className="grid grid-cols-2">
-                                            <CardTitle>Producto</CardTitle>
-                                            <DialogTrigger asChild>                    
-                                                <Button variant="outline" size="sm" className="w-1/2 ml-auto">
-                                                    Agregar
-                                                    <PlusCircle className="ml-2 h-4 w-4"/>
-                                                </Button>
-                                            </DialogTrigger>
-                                            <DialogContent>
-                                                {/* //TODO: Dialog donde selecciono el producto vendido */}
-                                            </DialogContent>
-                                            <CardDescription>
-                                                Seleccione el producto vendido.
-                                            </CardDescription>
-                                        </CardHeader>
-                                        <CardContent>
-                                            <SelectProductSold />
-                                        </CardContent>
-                                    </Dialog>
+                                    <CardHeader>
+                                        <CardTitle>Producto</CardTitle>
+                                        <CardDescription>
+                                            Seleccione el producto vendido.
+                                        </CardDescription>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <SelectProductSold />
+                                    </CardContent>
                                 </Card>
                             </div>
                             <div className="grid auto-rows-max items-start gap-4 lg:gap-8">
@@ -146,4 +194,4 @@ const page = () => {
     )
 }
 
-export default page
+export default NewSalePage

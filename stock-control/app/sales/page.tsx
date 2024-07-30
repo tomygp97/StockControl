@@ -106,7 +106,6 @@ const Sales = () => {
                 </div>
             </div>
         </div>
-
     )
 }
 
