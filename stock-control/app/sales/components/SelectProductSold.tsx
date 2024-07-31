@@ -30,7 +30,7 @@ import {
     FormMessage,
 } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { PlusCircle, Send, ShoppingCart } from "lucide-react";
+import { Check, PlusCircle, Send, ShoppingCart } from "lucide-react";
 
 import { fetchAllProducts } from "@/app/api/apiService";
 
@@ -38,14 +38,17 @@ import { fetchAllProducts } from "@/app/api/apiService";
 import { Product, Variant } from "@/types";
 
 
+interface SelectProductSoldProps {
+    onSelectProduct: (productIds: string[]) => void;
+}
 
-
-const SelectProductSold = () => {
+const SelectProductSold: React.FC<SelectProductSoldProps> = ({ onSelectProduct }) => {
     const [productsList, setProductsList] = useState<Product[]>([]);
     const [availableProducts, setAvailableProducts] = useState<Product[]>([])
-    const [variantsList, setVariantsList ] = useState<Variant[]>([]);
-    const [selectedProducts, setSelectedProducts] = useState<Product[] | []>([]);
-    console.log("selectedProducts: ", selectedProducts)
+    // const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
+    const [selectedProductIds, setSelectedProductIds] = useState<string[]>([]);
+    // const [selectedProducts, setSelectedProducts] = useState<Product[] | []>([]);
+    // console.log("selectedProducts: ", selectedProducts)
 
     const fetchProductsData = async() => {
         try {
@@ -61,10 +64,24 @@ const SelectProductSold = () => {
     }, [])
 
     useEffect(() => {
-        // setAvailableProducts();
         setAvailableProducts(productsList.filter((product) => product.quantityInStock > 0));
-
     }, [productsList])
+
+    // const handleProductSelect = (productId: string) => {
+    //     setSelectedProductId(productId);
+    //     onSelectProduct(productId);
+    // };
+    const handleProductSelect = (productId: string) => {
+        setSelectedProductIds(prevSelectedProductIds => {
+            const isSelected = prevSelectedProductIds.includes(productId);
+            const updatedSelectedProductIds = isSelected
+                ? prevSelectedProductIds.filter(id => id !== productId)
+                : [...prevSelectedProductIds, productId];
+            
+            onSelectProduct(updatedSelectedProductIds);
+            return updatedSelectedProductIds;
+        });
+    };
 
 
     return (
@@ -103,19 +120,24 @@ const SelectProductSold = () => {
                             ${ product.price }
                         </TableCell>
                         <TableCell className="flex justify-end">
-                            <Button variant="outline" size="icon">
-                                <ShoppingCart className="w-4 h-4"/>
+                            <Button variant="outline" size="icon" className="relative w-10 h-10 transition-all duration-300" onClick={() => handleProductSelect(product._id!)}>
+                            <div
+                                className={`absolute inset-0 flex items-center justify-center transition-opacity duration-300 ${selectedProductIds.includes(product._id!) ? 'opacity-100' : 'opacity-0'}`}
+                            >
+                                <Check className="w-6 h-6 text-green-500" />
+                            </div>
+                            <div
+                                className={`absolute inset-0 flex items-center justify-center transition-opacity duration-300 ${selectedProductIds.includes(product._id!) ? 'opacity-0' : 'opacity-100'}`}
+                            >
+                                <ShoppingCart className="w-4 h-4 text-black" />
+                            </div>
                             </Button>
                         </TableCell>
                     </TableRow>
                 ))
             }
             </TableBody>
-            <TableFooter className=" grid grid-cols-2 gap-4">
                 {/* //TODO Add pagination */}
-                <Button variant="outline">Prev</Button>
-                <Button variant="outline">Next</Button>
-            </TableFooter>
         </Table>
     )
 }
