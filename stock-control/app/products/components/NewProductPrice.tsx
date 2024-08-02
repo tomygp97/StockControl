@@ -23,22 +23,15 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useProductContext } from "../context/ProductContext";
 
 // Types
 import { Product } from "@/types";
-
-// interface newProudctPriceProps {
-//     onPriceChange: (price: number) => void;
-// }
 
 const formSchema = z.object({
     price: z.number().min(1, { message: "El precio es requerido" }),
 });
 
-// const NewProductPrice: React.FC<NewProductPriceProps> = ({ productData, setProductData }) => {
     const NewProductPrice = () => {
-        // const { productData, setProductData} = useProductContext();
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -46,16 +39,6 @@ const formSchema = z.object({
             price:  0,
         }
     });
-    
-    // useEffect(() => {
-    //     console.log("Errores del formulario:", form.formState.errors);
-    // }, [form.formState.errors]);
-
-    // const onSubmit = (values: z.infer<typeof formSchema>) => {
-    //     const newPrice = values.price;
-    //     onPriceChange(newPrice);
-    // }
-    
 
     return (
         <Card>

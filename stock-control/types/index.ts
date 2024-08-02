@@ -15,8 +15,8 @@ export interface Product {
     quantityInStock: number;
     category: string;
     description?: string; // El campo es opcional
-    // variants: mongoose.Schema.Types.ObjectId[]; // Puedes ajustar el tipo según tu esquema
-    variants: string[]; // Puedes ajustar el tipo según tu esquema
+    // variants: string[]; // Puedes ajustar el tipo según tu esquema
+    variants: Variant[]; // Puedes ajustar el tipo según tu esquema
     customFields?: Record<string, any>; // Puedes usar cualquier tipo para customFields
     createdAt: Date;
     updatedAt: Date;

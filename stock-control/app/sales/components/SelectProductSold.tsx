@@ -12,23 +12,6 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import {
-    Dialog,
-    DialogClose,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from "@/components/ui/dialog";
-import {
-    Form,
-    FormControl,
-    FormItem,
-    FormLabel,
-    FormMessage,
-} from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { Check, PlusCircle, Send, ShoppingCart } from "lucide-react";
 
@@ -67,10 +50,6 @@ const SelectProductSold: React.FC<SelectProductSoldProps> = ({ onSelectProduct }
         setAvailableProducts(productsList.filter((product) => product.quantityInStock > 0));
     }, [productsList])
 
-    // const handleProductSelect = (productId: string) => {
-    //     setSelectedProductId(productId);
-    //     onSelectProduct(productId);
-    // };
     const handleProductSelect = (productId: string) => {
         setSelectedProductIds(prevSelectedProductIds => {
             const isSelected = prevSelectedProductIds.includes(productId);
