@@ -24,12 +24,9 @@ import { Sale } from "@/types";
 const Sales = () => {
     const [salesList, setSalesList] = useState([])
     const [activeSale, setActiveSale] = useState<Sale | null>(null);
-    console.log("activeSale: ", activeSale)
     const [loading, setLoading] = useState(false)
 
     const saleNumber = salesList.length
-    console.log("saleNumber: ", saleNumber)
-
 
     const fetchSalesData = async() => {
         try {
@@ -52,7 +49,6 @@ const Sales = () => {
             setActiveSale(salesList[salesList.length - 1]);
         }
     }, [salesList]);
-
 
     return (
         <div className="flex min-h-screen w-full flex-col">

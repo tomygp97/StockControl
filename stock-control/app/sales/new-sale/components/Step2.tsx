@@ -28,46 +28,71 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/use-toast";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
-import { Button } from "@/components/ui/button";
+
+import { fetchSingleProduct } from "@/app/api/apiService";
 import { useRouter } from "next/navigation";
-import { useToast } from "@/components/ui/use-toast";
 
-import { fetchSingleProduct, fetchAllVariantsByProductId } from "@/app/api/apiService";
+// Types
 import { Product } from "@/types";
-import { Check, ShoppingCart } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
 
-
-const formSchema = z.object({
-    productsSold: z.array(
-        z.object({
-            productId: z.string().min(1, { message: "Producto es requerido" }),
-            variants: z.array(
-                z.object({
-                    variantId: z.string().min(1, { message: "Variante es requerida" }),
-                    quantity: z.number().min(1, { message: "Cantidad debe ser mayor que 0" })
-                })
-            ).min(1, { message: "Al menos una variante debe ser vendida" }),
-        })
-    ).min(1, { message: "Al menos un producto debe ser vendido" }),
-});
+type ErrorMessages = {
+    [productId: string]: {
+        [variantId: string]: string;
+    };
+};
 
 const Step2 = () => {
     const [productsIds, setProductsIds] = useState<string[]>([]);
     const [productsData, setProductsData] = useState<Product[]>([]);
     const [selectedVariants, setSelectedVariants] = useState<Record<string, Record<string, number>>>({});
+    const [errorMessages, setErrorMessages] = useState<ErrorMessages>({});
 
-    // console.log("productsIds desde step2: ", productsIds);
-    // console.log("productsData desde step2: ", productsData);
-    const router = useRouter();
     const { toast } = useToast();
+    const router = useRouter();
 
     const productContext = useProductContext();
-    const { removeVariant, addVariant } = productContext;
+
+    const validateQuantity = (productsData: Product[]) => (value: { productsSold: { productId: string; variants: { variantId: string; quantity: number }[] }[] }) => {
+        for (const productSold of value.productsSold) {
+            const product = productsData.find(p => p._id === productSold.productId);
+            if (!product) return false;
+    
+            for (const variantSold of productSold.variants) {
+                const variant = product.variants.find(v => v._id === variantSold.variantId);
+                if (!variant || variantSold.quantity > variant.quantity) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    };    
+
+    const formSchema = z.object({
+        productsSold: z.array(
+            z.object({
+                productId: z.string().min(1, { message: "Producto es requerido" }),
+                variants: z.array(
+                    z.object({
+                        variantId: z.string().min(1, { message: "Variante es requerida" }),
+                        quantity: z.number().min(1, { message: "Cantidad debe ser mayor que 0" })
+                    })
+                ).min(1, { message: "Al menos una variante debe ser vendida" }),
+            })
+        ).min(1, { message: "Al menos un producto debe ser vendido" }),
+    }).refine(
+        (data) => validateQuantity(productsData)(data),
+        {
+            message: "Cantidad vendida no puede exceder el stock disponible",
+            path: ["productsSold"]
+        }
+    );
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -99,23 +124,6 @@ const Step2 = () => {
         }
     }, [productsIds]);
 
-    const handleVariantSelect = (productId: string, variantId: string) => {
-        console.log("productId: ", productId, "varianId: ", variantId);
-
-        const newSelectedVariants = { ...selectedVariants };
-        if (!newSelectedVariants[productId]) {
-            newSelectedVariants[productId] = {};
-        }
-
-        // Toggle variant selection
-        if (newSelectedVariants[productId][variantId]) {
-            delete newSelectedVariants[productId][variantId];
-        } else {
-            newSelectedVariants[productId][variantId] = 1; // Initialize with quantity 1
-        }
-        setSelectedVariants(newSelectedVariants);
-    };
-
     const handleQuantityChange = (productId: string, variantId: string, quantity: number) => {
         if (!productId || !variantId) {
             return;
@@ -134,6 +142,32 @@ const Step2 = () => {
     };
 
     const handleContinue = () => {
+        const newErrorMessages: ErrorMessages = {};
+    
+        const isValid = Object.entries(selectedVariants).every(([productId, variants]) => {
+            const product = productsData.find(p => p._id === productId);
+            if (!product) return true;
+    
+            return Object.entries(variants).every(([variantId, quantity]) => {
+                const variant = product.variants.find(v => v._id === variantId);
+                if (!variant) return true;
+    
+                if (quantity > variant.quantity) {
+                    if (!newErrorMessages[productId]) {
+                        newErrorMessages[productId] = {};
+                    }
+                    newErrorMessages[productId][variantId] = `Cantidad vendida no puede exceder el stock disponible (${variant.quantity})`;
+                    return false;
+                }
+                return true;
+            });
+        });
+    
+        if (!isValid) {
+            setErrorMessages(newErrorMessages);
+            return;
+        }
+    
         const productsSold = Object.entries(selectedVariants).map(([productId, variants]) => ({
             productId,
             variants: Object.entries(variants)
@@ -144,6 +178,7 @@ const Step2 = () => {
         form.setValue('productsSold', productsSold);
     
         form.handleSubmit(onSubmit)();
+        router.push('/sales/new-sale?step=step3');
     };
 
     return (
@@ -151,111 +186,109 @@ const Step2 = () => {
             <div className="text-xl font-semibold tracking-tight mb-4">
                 Ingresar Variantes Vendidas
             </div>
-            <div className="mx-auto grid max-w-[59rem] flex-1 auto-rows-max gap-4">
-                <div className="grid gap-4 md:grid-cols-[1fr_250px] lg:grid-cols-3 lg:gap-8">
-                    <div className="grid auto-rows-max items-start gap-4 lg:col-span-2 lg:gap-8">
-                    {
-                        productsData.map((product, productIndex) => (
-                            <Card key={product._id} className="">
-                                <CardHeader>
-                                    <CardTitle>{product.name}</CardTitle>
-                                    <CardDescription>
-                                        Seleccione las variantes vendidas.
-                                    </CardDescription>
-                                </CardHeader>
-                                <CardContent>
-                                    <Table>
-                                        <TableHeader>
-                                            <TableRow>
-                                                <TableHead className="w-[100px]">Color</TableHead>
-                                                <TableHead className="text-center">Talles</TableHead>
-                                                <TableHead className="w-[200px] text-center">Disponibilidad</TableHead>
-                                                <TableHead className="text-center">Stock</TableHead>
-                                                <TableHead className="w-[200px] text-center">Cantidad</TableHead>
-                                                <TableHead className="sr-only">Acciones</TableHead>
+            <div className={`mx-auto max-w-[70rem] flex flex-wrap gap-4 ${productsData.length > 1 ? 'grid-cols-1 sm:grid-cols-1 md:grid-cols-2' : 'justify-center'}`}>
+                {
+                    productsData.map((product, productIndex) => (
+                        <Card key={product._id} className="w-full md:w-[calc(50%-1rem)]">
+                            <CardHeader>
+                                <CardTitle>{product.name}</CardTitle>
+                                <CardDescription>
+                                    Seleccione las variantes vendidas.
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead className="w-[100px]">Color</TableHead>
+                                            <TableHead className="text-center">Talles</TableHead>
+                                            <TableHead className="w-[200px] text-center">Disponibilidad</TableHead>
+                                            <TableHead className="text-center">Stock</TableHead>
+                                            <TableHead className="w-[200px] text-center">Cantidad</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {product.variants.map((variant, variantIndex) => (
+                                            <TableRow key={variant._id}>
+                                                <TableCell className="font-semibold">
+                                                    {variant.color}
+                                                </TableCell>
+                                                <TableCell className="text-center">
+                                                    {variant.size}
+                                                </TableCell>
+                                                <TableCell className="text-center">
+                                                    {
+                                                        variant.availability === 'Disponible' ? (
+                                                            <Badge>Disponible</Badge>
+                                                        ) : (
+                                                            <Badge variant="destructive">Agotado</Badge>
+                                                        )
+                                                    }
+                                                </TableCell>
+                                                <TableCell className="text-center">
+                                                    {variant.quantity}
+                                                </TableCell>
+                                                <TableCell className="text-center">
+                                                    <Form {...form}>
+                                                        <form onSubmit={form.handleSubmit(onSubmit)}>
+                                                            <FormItem>
+                                                                <FormControl>
+                                                                    <Controller
+                                                                        name={`productsSold.${productIndex}.variants.${variantIndex}.quantity`}
+                                                                        control={form.control}
+                                                                        render={({ field, fieldState }) => {
+                                                                            const productId = product._id;
+                                                                            const variantId = variant._id;
+
+                                                                            if (!productId || !variantId) {
+                                                                                return <></>; // Devuelve fragmento vacío si productId o variantId es undefined
+                                                                            }
+
+                                                                            const productVariants = selectedVariants[productId] || {};
+                                                                            const quantity = productVariants[variantId] ?? 0;
+
+                                                                            return (
+                                                                                <>
+                                                                                    <Input
+                                                                                        type="number"
+                                                                                        {...field}
+                                                                                        value={quantity}
+                                                                                        onChange={(e) => {
+                                                                                            const newQuantity = e.target.valueAsNumber;
+                                                                                            field.onChange(newQuantity);
+                                                                                            handleQuantityChange(productId, variantId, newQuantity);
+                                                                                        }}
+                                                                                    />
+                                                                                    {fieldState.error && (
+                                                                                        <FormMessage>
+                                                                                            {fieldState.error.message}
+                                                                                        </FormMessage>
+                                                                                    )}
+                                                                                    {errorMessages[productId] && errorMessages[productId][variantId] && (
+                                                                                        <FormMessage>
+                                                                                            {errorMessages[productId][variantId]}
+                                                                                        </FormMessage>
+                                                                                    )}
+                                                                                </>
+                                                                            );
+                                                                        }}
+                                                                    />
+                                                                </FormControl>
+                                                            </FormItem>
+                                                        </form>
+                                                    </Form>
+                                                </TableCell>
                                             </TableRow>
-                                        </TableHeader>
-                                        <TableBody>
-                                            {product.variants.map((variant, variantIndex) => (
-                                                <TableRow key={variant._id}>
-                                                    <TableCell className="font-semibold">
-                                                        {variant.color}
-                                                    </TableCell>
-                                                    <TableCell className="text-center">
-                                                        {variant.size}
-                                                    </TableCell>
-                                                    <TableCell className="text-center">
-                                                        {
-                                                            variant.availability === 'Disponible' ? (
-                                                                <Badge>Disponible</Badge>
-                                                            ) : (
-                                                                <Badge variant="destructive">Agotado</Badge>
-                                                            )
-                                                        }
-                                                        
-                                                    </TableCell>
-                                                    <TableCell className="text-center">
-                                                        {variant.quantity}
-                                                    </TableCell>
-                                                    <TableCell className="text-center">
-                                                        <Form {...form}>
-                                                            <form onSubmit={form.handleSubmit(onSubmit)}>
-                                                                <FormItem>
-                                                                    <FormControl>
-                                                                        <Controller
-                                                                            name={`productsSold.${productIndex}.variants.${variantIndex}.quantity`}
-                                                                            control={form.control}
-                                                                            render={({ field, fieldState, formState }) => {
-                                                                                const productId = product._id;
-                                                                                const variantId = variant._id;
-
-                                                                                if (!productId || !variantId) {
-                                                                                return <></>; // Devuelve fragmento vacio si productId o variantId es undefined
-                                                                                }
-
-                                                                                const productVariants = selectedVariants[productId] || {};
-                                                                                const quantity = productVariants[variantId] ?? 0;
-
-                                                                                return (
-                                                                                <Input
-                                                                                    type="number"
-                                                                                    {...field}
-                                                                                    value={quantity}
-                                                                                    onChange={(e) => {
-                                                                                    const newQuantity = e.target.valueAsNumber;
-                                                                                    field.onChange(newQuantity);
-                                                                                    handleQuantityChange(productId, variantId, newQuantity);
-                                                                                    }}
-                                                                                />
-                                                                                );
-                                                                            }}
-                                                                        />
-                                                                    </FormControl>
-                                                                    <FormMessage />
-                                                                </FormItem>
-                                                            </form>
-                                                        </Form>
-                                                    </TableCell>
-                                                    <TableCell className="flex justify-end">
-                                                        {/* <Button size="icon" variant="ghost" onClick={() => handleVariantSelect(product._id, variant._id)}> */}
-                                                        <Button size="icon" variant="ghost">
-                                                            <Check className="w-6 h-6 text-green-500" />
-                                                        </Button>
-                                                    </TableCell>
-                                                </TableRow>
-                                            ))}
-                                        </TableBody>
-
-                                    </Table>
-                                </CardContent>
-                            </Card>
-                        ))
-                    }
-                    </div>
-                </div>
+                                            
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </CardContent>
+                        </Card>
+                    ))
+                }
             </div>
             <div className="flex justify-end mt-4">
-                {/* <Link href="/sales/new-sale?step=step2"> */}
                 <Button type="submit" size="sm" onClick={handleContinue}>
                     Continuar
                 </Button>

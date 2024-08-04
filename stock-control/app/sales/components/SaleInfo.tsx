@@ -27,7 +27,6 @@ interface SaleInfoProps {
 
 const SaleInfo: React.FC<SaleInfoProps> = ({activeSale, saleNumber}) => {
     const [saleInfo, setSaleInfo] = useState<Sale>();
-    console.log("saleInfo: ", saleInfo);
     const impuestos = 1000;
 
     useEffect(() => {
