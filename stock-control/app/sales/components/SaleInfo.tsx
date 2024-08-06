@@ -1,6 +1,7 @@
 'use client'
 
 
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
     Card,
@@ -14,11 +15,10 @@ import { DropdownMenuContent, DropdownMenuItem, DropdownMenu, DropdownMenuTrigge
 import { Separator } from "@/components/ui/separator";
 import { Copy, CreditCard, MoreVertical, Printer } from "lucide-react";
 import { format } from 'date-fns';
+import { fetchSingleSale } from "@/app/api/apiService";
 
 // Types
 import { Sale } from "@/types";
-import { useEffect, useState } from "react";
-import { fetchSingleSale } from "@/app/api/apiService";
 
 interface SaleInfoProps {
     activeSale: (Sale & { saleNumber?: number }) | null;
@@ -42,7 +42,6 @@ const SaleInfo: React.FC<SaleInfoProps> = ({activeSale, saleNumber}) => {
             fetchSaleInfo();
         }
     }, [activeSale])
-
 
     return (
         <Card className="overflow-hidden">

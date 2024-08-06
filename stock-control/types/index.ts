@@ -52,7 +52,8 @@ export interface Customer {
     name: string;
     contact?: string;
     phone?: number;
-    email?: string | undefined;
+    // email?: string | undefined;
+    email: string;
     address?: string | undefined;
     notes?: string | undefined;
 }
