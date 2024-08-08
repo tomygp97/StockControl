@@ -24,6 +24,7 @@ import { Sale } from "@/types";
 const Sales = () => {
     const [salesList, setSalesList] = useState([])
     const [activeSale, setActiveSale] = useState<Sale | null>(null);
+    console.log(activeSale)
     const [loading, setLoading] = useState(false)
 
     const saleNumber = salesList.length

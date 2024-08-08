@@ -39,6 +39,7 @@ import { fetchAllCustomers } from "@/app/api/apiService";
 import { Customer, Sale } from "@/types";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { useProductContext } from "../../context/ProductContext";
 
 const initialSale: Sale = {
   _id: '',
@@ -64,17 +65,26 @@ const initialSale: Sale = {
   __v: 0,
 };
 
+//TODO traducir los errores a español
 const FormSchema = z.object({
   email: z
     .string({
       required_error: "Please select an email to display.",
     })
     .email(),
+    paymentDetails: z.object({
+      method: z.enum(['Efectivo', 'Transferencia', 'Mercadopago'], {
+        required_error: "Please select a payment method.",
+      }),
+    }),
     bill: z.boolean(),
 })
 
 const Step3 = () => {
   const [customersList, setCustomersList] = useState<Customer[]>([]);
+
+  const {selectedProductIds} = useProductContext();
+  console.log("selectedProductIds: ", selectedProductIds);
 
   const fetchCustomersData = async() => {
     try {
@@ -91,6 +101,7 @@ useEffect(() => {
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
+    defaultValues: initialSale,
   });
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
@@ -112,29 +123,31 @@ useEffect(() => {
                           <Controller
                             name="email"
                             control={form.control}
-                            render={({ field }) => (
+                            render={({ field, fieldState }) => (
+                              <>
                               <Select onValueChange={field.onChange} defaultValue={field.value}>
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Selecciona un cliente de la base de datos" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                { customersList.map((customer) => (
-                                  <SelectItem key={customer._id} value={customer.email}>{customer.email}</SelectItem>
-                                ))}
-                                <SelectItem value="m@example.com">m@example.com</SelectItem>
-                                <SelectItem value="m@google.com">m@google.com</SelectItem>
-                                <SelectItem value="m@support.com">m@support.com</SelectItem>
-                              </SelectContent>
-                              <FormDescription>
-                                Ingresa el cliente
-                              </FormDescription>
-                            </Select>
+                                <FormControl>
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Selecciona un cliente de la base de datos" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                {/* //TODO Seleccionar desde una tabla con todos los clientes y los datos*/}
+                                <SelectContent>
+                                  { customersList.map((customer) => (
+                                    <SelectItem key={customer._id} value={customer.email}>{customer.name} - {customer.email}</SelectItem>
+                                  ))}
+                                  <SelectItem value="m@example.com">m@example.com</SelectItem>
+                                  <SelectItem value="m@google.com">m@google.com</SelectItem>
+                                  <SelectItem value="m@support.com">m@support.com</SelectItem>
+                                </SelectContent>
+                              </Select>
+                                {fieldState.error && (
+                                  <FormMessage>{fieldState.error.message}</FormMessage>
+                                )}
+                              </>
                             )}
                           />
                         </FormControl>
-                        <FormMessage />
                       </FormItem>
                     </div>
                     <div className="ml-auto flex items-center space-x-2">
@@ -144,11 +157,38 @@ useEffect(() => {
                           name="bill"
                           control={form.control}
                           render={({ field }) => (
-                            <Switch id="bill" {...field} checked={field.value} onCheckedChange={field.onChange} value={field.value.toString()} />
+                            <Switch id="bill" checked={field.value} onCheckedChange={field.onChange} />
                           )}
                         />
                       </FormControl>
                     </div>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <FormItem>
+                      <FormLabel>Método de Pago</FormLabel>
+                      <FormControl>
+                        <Controller
+                          name="paymentDetails.method"
+                          control={form.control}
+                          render={({ field }) => (
+                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Selecciona una opción" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectItem value="Efectivo">Efectivo</SelectItem>
+                                <SelectItem value="Transferencia">Transferencia</SelectItem>
+                                <SelectItem value="Mercadopago">Mercadopago</SelectItem>
+                              </SelectContent>
+                              <FormMessage />
+                            </Select>
+                          )}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
                   </div>
                   <Button type="submit">Submit</Button>
                 </form>
